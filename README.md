@@ -1,10 +1,10 @@
 # MissileCommandDeluxe THSF 1984-2014
 
 Presentation OpenGL full.pdf : Formation de deux jours à OpenGL 
-[rubans & cerfVolant - opengl](http://www.youtube.com/watch?v=t2-0ncnkLbU)
+[![rubans & cerfVolant - opengl](http://img.youtube.com/vi/t2-0ncnkLbU/0.jpg)](http://www.youtube.com/watch?v=t2-0ncnkLbU)
 
 workspaceLWJGL : MissileCommandDeluxe source code
-[Missile command deluxe - sound set ](http://www.youtube.com/watch?v=YE3d1cP26v8)
+[![Missile command deluxe - sound set ](http://img.youtube.com/vi/YE3d1cP26v8/0.jpg)](http://www.youtube.com/watch?v=YE3d1cP26v8)
 
 MissileCommandDeluxe est une animation ayant eu lieu au Festival THSF 2014. Dans le cadre des 30 ans du livre 1984, avec notamment la peur du nucléaire.
 
