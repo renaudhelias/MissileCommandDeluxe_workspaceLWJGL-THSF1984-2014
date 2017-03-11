@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/Arc2D/src/net/stinfoservices/helias/renaud/arc/Arc2DMain.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.stinfoservices.helias.renaud.arc.Arc2DMain"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Arc2D"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${workspace_loc:Arc2D}"/>
+</launchConfiguration>

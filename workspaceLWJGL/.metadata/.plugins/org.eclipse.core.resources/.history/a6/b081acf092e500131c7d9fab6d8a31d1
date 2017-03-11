@@ -1,0 +1,515 @@
+package net.stinfoservices.helias.renaud.tempest.tools;
+
+import java.awt.geom.Point2D;
+
+import net.stinfoservices.helias.renaud.tempest.agent.ICircle2D;
+import net.stinfoservices.helias.renaud.tempest.agent.ICircle3D;
+import net.stinfoservices.helias.renaud.tempest.agent.IMove2D;
+import net.stinfoservices.helias.renaud.tempest.agent.IMove3D;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.IProjectile2D;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.IProjectile3D;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel2D;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel3D;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.ICase2D;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.ITerrain2D;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.IZone2D;
+import net.stinfoservices.helias.renaud.tempest.tools.adapt.Circle3DAdapter;
+import net.stinfoservices.helias.renaud.tempest.tools.adapt.Projectile3DAdapter;
+
+import org.lwjgl.util.Timer;
+
+public class Tools {
+
+	public static final double CALIBRATE_STEP = 100;
+	
+	private static Timer timer;
+	private static int consume;
+
+	/**
+	 * random position in screen
+	 * @return
+	 */
+	public static Point2D.Double randomPosition(int width, int height) {
+		return new Point2D.Double(Math.random()*width,Math.random()*height);
+	}
+
+	/**
+	 * Random value between i and j.
+	 * @param i
+	 * @param j
+	 * @return
+	 */
+	public static double randomValue(double i, double j) {
+		return Math.random()*(j-i)+i;
+	}
+
+	
+	/**
+	 * Random directed vector, having size between i and j.
+	 * @param i
+	 * @param j
+	 * @return
+	 */
+	public static Point2D.Double randomVector(double i, double j) {
+		double rayon = randomValue(i,j);
+		double direction = randomValue(0,Math.PI*2);
+		return new Point2D.Double(Math.cos(direction)*rayon,Math.sin(direction)*rayon);
+	}
+
+	public static synchronized int nbSteps(boolean reset) {
+		if (reset) {
+			timer = new Timer();
+			consume = 0;
+		}
+		double seconds = timer.getTime()*CALIBRATE_STEP;
+		int nbSteps = (int) (Math.floor(seconds) - consume);
+		consume +=nbSteps;
+		return nbSteps;
+	}
+
+	/**
+	 * Compute true current position of an IMove.
+	 * @param move
+	 * @return
+	 */
+	public static Point2D.Double computeMiddle(IMove2D move) {
+		Point2D.Double current = move.getPreviousPosition();
+		Point2D.Double next = move.getNextPosition();
+		double progression = move.getProgression();
+		return computeMiddle(current, next, progression);
+	}
+	
+	/**
+	 * Compute true current position of an IMove.
+	 * @param move
+	 * @return
+	 */
+	public static Point3D.Double computeMiddle(IMove3D move) {
+		Point3D.Double current = move.getPreviousPosition();
+		Point3D.Double next = move.getNextPosition();
+		double progression = move.getProgression();
+		return computeMiddle(current, next, progression);
+	}
+
+	public static Point3D.Double computeMiddle(Point3D.Double current, Point3D.Double next,
+			double progression) {
+		Point3D.Double middle = new Point3D.Double();
+		if (next==null) {
+			next = new Point3D.Double(current.x, current.y, current.z);
+		}
+		middle.x = (next.x - current.x) * progression + current.x;
+		middle.y = (next.y - current.y) * progression + current.y;
+		middle.z = (next.z - current.z) * progression + current.z;
+		return middle;
+	}
+	
+	public static Point2D.Double computeMiddle(Point2D.Double current, Point2D.Double next,
+			double progression) {
+		Point2D.Double middle = new Point2D.Double();
+		if (next==null) {
+			next = new Point2D.Double(current.x, current.y);
+		}
+		middle.x = (next.x - current.x) * progression + current.x;
+		middle.y = (next.y - current.y) * progression + current.y;
+		return middle;
+	}
+
+	public static boolean touchCircleCircle(ICircle2D cercle1, ICircle2D cercle2) {
+		double distance = Math.sqrt(Math.pow(cercle1.getPosition().x - cercle2.getPosition().x,2)+Math.pow(cercle1.getPosition().y - cercle2.getPosition().y, 2));
+		return distance <= cercle1.getRayon()+cercle2.getRayon();
+	}
+
+	public static boolean touchCircle3DCircle3D(ICircle3D cercle1, ICircle3D cercle2) {
+		double distance = Math.sqrt(Math.pow(cercle1.getPosition().x - cercle2.getPosition().x,2)+Math.pow(cercle1.getPosition().y - cercle2.getPosition().y, 2)+Math.pow(cercle1.getPosition().z - cercle2.getPosition().z, 2));
+		return distance <= cercle1.getRayon()+cercle2.getRayon();
+	}
+
+	public static boolean touchCircleCircle3D(final ICircle2D cercle0, ICircle3D cercle2) {
+		ICircle3D cercle1= new Circle3DAdapter(cercle0); 
+		return touchCircle3DCircle3D(cercle1, cercle2);
+	}
+	public static boolean touchArrow3DCircle(IProjectile3D arrow, ICircle2D cercle) {
+		return touchArrow3DCircle3D(arrow, new Circle3DAdapter(cercle));
+	}
+	public static boolean touchArrowCircle3D(IProjectile2D arrow, ICircle3D cercle) {
+		return touchArrow3DCircle3D(new Projectile3DAdapter(arrow), cercle);
+		
+	}
+	/**
+	 * Intersection segment cercle en 3D
+	 *	j'ai un vecteur plus un point, donc une droite
+	 *	j'ai un vecteur plus deux points, donc un plan
+	 *	ce plan a une normal
+	 *	cette normal permet une rotation du vecteur de 90°
+	 *	du second point avec cette perpendiculaire je peux projeter un point sur la droite
+	 *	j'ai donc mon sinus (la distance entre ces deux points)
+	 *	j'en déduit le cosinus dans le cercle, et donc la position des deux points extrème : j'ai mon segment de contact.
+	 *	je compare mon segment à l'autre.
+	 * @param arrow
+	 * @param cercle
+	 * @return
+	 */
+	public static boolean touchArrow3DCircle3D(IProjectile3D arrow, ICircle3D cercle) {
+		Point3D.Double centre = cercle.getPosition();
+		double rayon = cercle.getRayon();
+		Point3D.Double p1 = arrow.getDevantOld();
+		Point3D.Double p2 = arrow.getDevant();
+		
+		// on va la jouer warrior : le point le plus proche d'un segment par rapport � un point (centre du cercle) est la perpendiculaire au segment passant par ce point.
+		// intersection segment cercle en 3D
+
+		Point3D.Double vecteur12 = new Point3D.Double();
+		vecteur12.x = p2.x-p1.x;
+		vecteur12.y = p2.y-p1.y;
+		vecteur12.z = p2.z-p1.z;
+		double tailleVecteur =Math.sqrt(vecteur12.x*vecteur12.x+vecteur12.y*vecteur12.y+vecteur12.z*vecteur12.z); 
+		// normalize
+		// j'ai un vecteur plus un point, donc une droite
+		vecteur12.x = vecteur12.x/tailleVecteur;
+		vecteur12.y = vecteur12.y/tailleVecteur;
+		vecteur12.z = vecteur12.z/tailleVecteur;
+		// j'ai un vecteur plus deux points, donc un plan
+		// p1+vecteur12+cercle
+
+		Point3D.Double vecteurC1 = new Point3D.Double();
+		vecteurC1.x = p1.x - centre.x;
+		vecteurC1.y = p1.y - centre.y;
+		vecteurC1.z = p1.z - centre.z;
+		tailleVecteur =Math.sqrt(vecteurC1.x*vecteurC1.x+vecteurC1.y*vecteurC1.y+vecteurC1.z*vecteurC1.z);
+		//normalize
+		vecteurC1.x = vecteurC1.x/tailleVecteur;
+		vecteurC1.y = vecteurC1.y/tailleVecteur;
+		vecteurC1.z = vecteurC1.z/tailleVecteur;
+		
+		// ce plan a une normal
+		Point3D.Double normal = new Point3D.Double();
+		normal.x= vecteur12.y*vecteurC1.z-vecteur12.z*vecteurC1.y;
+		normal.y= vecteur12.z*vecteurC1.x-vecteur12.x*vecteurC1.z;
+		normal.z= vecteur12.x*vecteurC1.y-vecteur12.y*vecteurC1.x;
+		tailleVecteur =Math.sqrt(normal.x*normal.x+normal.y*normal.y+normal.z*normal.z);
+		double distCP;
+		double distP;
+		Point3D.Double centreP;
+		if (tailleVecteur == 0) {
+			// pas besoin de projeter
+			distCP=0;
+			distP = rayon;
+			centreP = new Point3D.Double(centre);
+		} else {
+			//normalize
+			normal.x = normal.x/tailleVecteur;
+			normal.y = normal.y/tailleVecteur;
+			normal.z = normal.z/tailleVecteur;
+			
+			
+			// cette normal permet une rotation du vecteur de 90°
+			Point3D.Double rotVecteur12 = new Rotate3D(normal, Math.PI/2).projeter(vecteur12);
+			// du second point avec cette perpendiculaire je peux projeter un point sur la droite
+			// p1
+			// centre+rotVecteur12
+			double a = Tools.angleVectorVector(rotVecteur12, Tools.vector3D(centre,p1));
+			double d = Math.sqrt(Math.pow(p1.x-centre.x,2)+Math.pow(p1.y-centre.y,2)+Math.pow(p1.z-centre.z,2));
+			// FIXME -1
+			distCP = Math.cos(a)*d;
+//			if (Double.isNaN(a)) {
+//				distCP=0;
+//			}
+		
+			// si le centreP est trop loin
+			if (rayon<=distCP) {
+				return false;
+			}
+					
+			// j'ai donc mon adjacent (la distance entre ces deux points)
+			distP = Math.sqrt(rayon*rayon-distCP*distCP);
+			
+			// centreP : 
+			centreP= new Point3D.Double(rotVecteur12);
+			centreP.x*=distCP;
+			centreP.y*=distCP;
+			centreP.z*=distCP;
+			centreP.x+=centre.x;
+			centreP.y+=centre.y;
+			centreP.z+=centre.z;
+		}
+		double dP1P = Math.sqrt(Math.pow(p1.x-centreP.x,2)+Math.pow(p1.y-centreP.y,2)+Math.pow(p1.z-centreP.z,2));
+		double dP2P = Math.sqrt(Math.pow(p2.x-centreP.x,2)+Math.pow(p2.y-centreP.y,2)+Math.pow(p2.z-centreP.z,2));
+		
+		// si centreP entre p1 et p2, alors true
+		if (between(centreP,p1,p2)) {
+			return true;
+		}
+		// sinon si distance(centreP,point1)<distP1P alors dans le segment
+		else if (dP1P<distP) {
+			return true;
+		}
+		// sinon si distance(centreP,point2)<distP1P alors dans le segment
+		else if (dP2P<distP) {
+			return true;
+		}
+		return false;
+	}
+	private static boolean between(
+			Point3D.Double centre,
+			Point3D.Double p1,
+			Point3D.Double p2) {
+		Point3D.Double v12 = new Point3D.Double();
+		v12.x=p2.x-p1.x;
+		v12.y=p2.y-p1.y;
+		v12.z=p2.z-p1.z;
+		double dist12 = Math.sqrt(v12.x*v12.x+v12.y*v12.y+v12.z*v12.z);
+		Point3D.Double vC1 = new Point3D.Double();
+		vC1.x=p1.x-centre.x;
+		vC1.y=p1.y-centre.y;
+		vC1.z=p1.z-centre.z;
+		double distC1= Math.sqrt(vC1.x*vC1.x+vC1.y*vC1.y+vC1.z*vC1.z);
+		Point3D.Double vC2 = new Point3D.Double();
+		vC2.x=p2.x-centre.x;
+		vC2.y=p2.y-centre.y;
+		vC2.z=p2.z-centre.z;
+		double distC2= Math.sqrt(vC2.x*vC2.x+vC2.y*vC2.y+vC2.z*vC2.z);
+		// si centreP dans cercle de centre p1 de rayon p1-p2
+		// et si centreP dans cercle de centre p2 de rayon p1-p2
+		
+		return distC1<=dist12 && distC2<=dist12;
+	}
+
+	public static boolean touchArrowCircle(IProjectile2D arrow, ICircle2D cercle) {
+		Point2D.Double centre = cercle.getPosition();
+		double rayon = cercle.getRayon();
+		Point2D.Double p1 = arrow.getDevantOld();
+		Point2D.Double p2 = arrow.getDevant();
+		
+		// on va la jouer warrior : le point le plus proche d'un segment par rapport � un point (centre du cercle) est la perpendiculaire au segment passant par ce point.
+		
+		Point2D.Double vecteur12 = new Point2D.Double();
+		vecteur12.x = p2.x-p1.x;
+		vecteur12.y = p2.y-p1.y;
+		double tailleVecteur =Math.sqrt(vecteur12.x*vecteur12.x+vecteur12.y*vecteur12.y); 
+		// normalize
+		vecteur12.x = vecteur12.x/tailleVecteur;
+		vecteur12.y = vecteur12.y/tailleVecteur;
+		double angle = Math.acos(vecteur12.x);
+		if (vecteur12.y<0) {
+			angle=-angle;
+		}
+		// rotate
+		angle+=Math.PI/2;
+		Point2D.Double vecteurPerpendiculaire = new Point2D.Double();
+		vecteurPerpendiculaire.x=Math.cos(angle);
+		vecteurPerpendiculaire.y=Math.sin(angle);
+		// intersection
+		
+		// p1.x+vecteur12.x*A = pos.x+vecteurPerpendiculaire.x*B
+		// p1.y+vecteur12.y*A = pos.y+vecteurPerpendiculaire.y*B => A= (pos.y+vecteurPerpendiculaire.y*B -p1.y)/vecteur12.y
+		
+		// p1.x+vecteur12.x*(pos.y+vecteurPerpendiculaire.y*B -p1.y)/vecteur12.y = pos.x+vecteurPerpendiculaire.x*B
+		// p1.x+vecteur12.x*pos.y/vecteur12.y+vecteur12.x*vecteurPerpendiculaire.y*B/vecteur12.y-vecteur12.x*p1.y/vecteur12.y = pos.x+vecteurPerpendiculaire.x*B
+		// p1.x+vecteur12.x*pos.y/vecteur12.y-vecteur12.x*p1.y/vecteur12.y -pos.x = vecteurPerpendiculaire.x*B-vecteur12.x*vecteurPerpendiculaire.y*B/vecteur12.y
+		// p1.x+vecteur12.x*pos.y/vecteur12.y-vecteur12.x*p1.y/vecteur12.y -pos.x = B*(vecteurPerpendiculaire.x-vecteur12.x*vecteurPerpendiculaire.y/vecteur12.y)
+		double B=(p1.x+vecteur12.x*centre.y/vecteur12.y-vecteur12.x*p1.y/vecteur12.y -centre.x )/(vecteurPerpendiculaire.x-vecteur12.x*vecteurPerpendiculaire.y/vecteur12.y);
+		
+		// point le plus proche
+		double x=centre.x+vecteurPerpendiculaire.x*B;
+		double y=centre.y+vecteurPerpendiculaire.y*B;
+		// dans le segment ?
+		boolean inSegment = true;
+		if (p1.x<p2.x){
+			if (!(p1.x<x && x<p2.x)) {
+				inSegment=false;
+			}
+		} else {
+			if (!(p2.x<x && x<p1.x)) {
+				inSegment=false;
+			}
+		}
+		if (p1.y<p2.y){
+			if (!(p1.y<y && y<p2.y)) {
+				inSegment=false;
+			}
+		} else {
+			if (!(p2.y<y && y<p1.y)) {
+				inSegment=false;
+			}
+		}
+		
+		if (inSegment) {
+			double distance = Math.sqrt(Math.pow((centre.x-x),2)+Math.pow((centre.y-y),2));
+			if (distance <= rayon) {
+				return true;
+			}
+		} else {
+			double distance1 = Math.sqrt(Math.pow((centre.x-p1.x),2)+Math.pow((centre.y-p1.y),2));
+			double distance2 = Math.sqrt(Math.pow((centre.x-p2.x),2)+Math.pow((centre.y-p2.y),2));
+			if (distance1 <= rayon || distance2 <= rayon) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static Point2D.Double vector(Point2D.Double from, Point2D.Double to) {
+		Point2D.Double norme = new Point2D.Double();
+		norme.x = to.x-from.x;
+		norme.y = to.y-from.y;
+		double lengh = Math.sqrt(Math.pow(norme.x,2)+Math.pow(norme.y,2));
+		norme.x = norme.x /lengh;
+		norme.y = norme.y /lengh;
+		return norme;
+	}
+	
+	public static double angleDegreesZ(Point2D.Double vector) throws NaNException {
+		if (Double.valueOf(vector.x).equals(Double.NaN) || Double.valueOf(vector.y).equals(Double.NaN)) {
+			throw new NaNException();
+		}
+		double angle = -Math.acos(vector.x);
+	//			System.out.println("angle("+norme.x+","+norme.y+")="+angle);
+		if (vector.y>0) angle = -angle;
+		return Math.toDegrees(angle)+90;
+	}
+
+	/**
+	 * Projection du controle (clique) dans la zone.
+	 * @param source source du tir (si null alors idem position)
+	 * @param position destination du tir
+	 * @param camera
+	 * @param zone
+	 * @return
+	 */
+	public static Point2D.Double projectionControle(Point2D.Double source, Point2D.Double position, IZone2D zone) {
+		Point2D.Double position2 = new Point2D.Double(position.x, position.y);
+		// plus de IJump nah !
+		return position2;
+	}
+	
+	/**
+	 * Tu est dans mon territoire.
+	 * @param position
+	 * @param terrain
+	 * @return
+	 */
+	public static ICase2D findCaseNearOf(Point2D.Double position, ITerrain2D terrain) {
+		ICase2D neighbour = terrain.getCase(0,0);
+		double distance = Math.sqrt(Math.pow(position.x-neighbour.getPosition().x,2)+Math.pow(position.y-neighbour.getPosition().y,2));
+		for (int i = 0; i < terrain.getWidth(); i++) {
+			for (int j =0;j<terrain.getHeight();j++) {
+				double newDistance = Math.sqrt(Math.pow(position.x-terrain.getCase(i,j).getPosition().x,2)+Math.pow(position.y - terrain.getCase(i,j).getPosition().y,2));
+				if (newDistance<distance) {
+					distance = newDistance;
+					neighbour=terrain.getCase(i,j);
+				}
+			}
+		}
+		return neighbour;
+	}
+
+	public static boolean touchArrowCircle3D(IProjectile3D arrow,
+			ICircle3D missile3d) {
+		throw new Error("Not implemented yet");
+//		return false;
+	}
+
+	public static boolean touchCircleCircle3D(ICircle3D canon,
+			ICircle3D missile3d) {
+		throw new Error("Not implemented yet");
+//		return false;
+	}
+
+	public static Point3D.Double vector3D(Point3D.Double from, Point3D.Double to) {
+		Point3D.Double norme = new Point3D.Double();
+		norme.x = to.x-from.x;
+		norme.y = to.y-from.y;
+		norme.z = to.z-from.z;
+		double lengh = Math.sqrt(Math.pow(norme.x,2)+Math.pow(norme.y,2)+Math.pow(norme.z,2));
+		norme.x = norme.x /lengh;
+		norme.y = norme.y /lengh;
+		norme.z = norme.z /lengh;
+		return norme;
+	}
+	
+	
+	/**
+	 * L'angle entre deux vecteur est toujours entre 0 et 180...
+	 * @param o normalized vector
+	 * @param o2 normalized vector
+	 * @return
+	 */
+	public static double angleVectorVector(
+			Point3D.Double o,Point3D.Double o2) {
+			
+		//http://www-int.impmc.upmc.fr/impmc/Enseignement/ye/cristallographie/calcul/46.html
+//		double v1v2 = (o.x+o.y+o.z)*(1.0+0.0+0.0);
+		// angle par rapport à l'axe X ?
+		double v1v2 = (o.x*o2.x+o.y*o2.y+o.z*o2.z);
+		
+//		double v1Abs=(o.x+o.y+o.z)*(o.x+o.y+o.z);
+//		double v2Abs=(1.0+0.0+0.0)*(1.0+0.0+0.0);
+		double v1Abs=(o.x*o.x+o.y*o.y+o.z*o.z);
+		double v2Abs=(o2.x*o2.x+o2.y*o2.y+o2.z*o2.z);
+//	cos a = (XaXb+YaYb+ZaZb) / sqrt((Xa²+Ya²+Za²)(Xb²+Yb²+Zb² ))
+
+//		double angle = Math.acos(v1v2/(Math.sqrt(v1Abs*v2Abs)));
+		
+		//acos( (x-> . y->)/(||x->|| X ||y->||) )
+		
+		double angle = Math.acos(v1v2/(Math.sqrt(v1Abs)*Math.sqrt(v2Abs)));
+		return angle;
+	}
+
+	public static double deduceRayon(ILevel3D level) {
+		Point3D.Double size= level.getArea().getCaseSize();
+		return (Math.sqrt(size.x*size.x/(2*2)+size.y*size.y/(2*2)+size.z*size.z/(2*2)))/2;
+	}
+	public static double deduceRayon(ILevel2D level) {
+		Point2D.Double size= level.getArea().getCaseSize();
+		return Math.sqrt(size.x*size.x/(2*2)+size.y*size.y/(2*2));
+	}
+
+	/**
+	 * Lorsque angle == NaN, vérifier si les vecteurs ne sont pas bêtement opposés.
+	 * @param o
+	 * @param o2
+	 * @return
+	 */
+	public static double directionVectorVector(
+			Point3D.Double o,
+			Point3D.Double o2) {
+		if (o.x>0 && o2.x<0) return -1;
+		if (o.y>0 && o2.y<0) return -1;
+		if (o.z>0 && o2.z<0) return -1;
+		return 1;
+	}
+
+	public static Point3D.Double normalize(
+			Point3D.Double vector) {
+		return vector3D(new Point3D.Double(), vector);
+	}
+	
+	public static Point3D.Double normalFromTriangle(Point3D.Double p1, Point3D.Double p2, Point3D.Double p3) {
+		Point3D.Double d1 = new Point3D.Double();
+		Point3D.Double d2= new Point3D.Double();
+		d1.x = p2.x - p1.x;
+		d1.y = p2.y - p1.y;
+		d1.z = p2.z - p1.z;
+		
+		d2.x = p3.x - p1.x;
+		d2.y = p3.y - p1.y;
+		d2.z = p3.z - p1.z;
+
+		Point3D.Double cross_product= new Point3D.Double();
+		cross_product.x = d1.y*d2.z - d1.z*d2.y;
+		cross_product.y = d1.z*d2.x - d1.x*d2.z;
+		cross_product.z = d1.x*d2.y - d1.y*d2.x;
+
+		double distance = Math.sqrt(	(cross_product.x*cross_product.x) +
+					(cross_product.y*cross_product.y) +
+					(cross_product.z*cross_product.z));
+		
+		Point3D.Double normal= new Point3D.Double();
+		normal.x = cross_product.x / distance;
+		normal.y = cross_product.y / distance;
+		normal.z = cross_product.z / distance;
+
+		return normal;
+	}
+}

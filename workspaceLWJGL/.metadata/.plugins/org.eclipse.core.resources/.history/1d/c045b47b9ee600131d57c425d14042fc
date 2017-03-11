@@ -1,0 +1,395 @@
+NIVEAU 1
+#	for (int x = 0; x < 20; x++) {
+#		for (int y = 0; y < 4; y++) {
+#			Maison3D maison = new Maison3D(this,new Point3D.Integer(x,y,19));
+#			friends.add(maison);
+#		}
+#	}
+
+#intrus
+Maison 7,1,20 maison2 4
+Maison 13,1,20 maison2 4
+
+#Maison 0,0,30 cube
+Maison 1,1,30 maison 3
+#Maison 2,0,30 cube
+Maison 3,0,30 cube
+Maison 4,0,30 cube
+#Maison 5,0,30 cube
+Maison 6,1,30 maison2 4
+#Maison 7,0,30 cube
+Maison 8,0,30 cube
+#Maison 9,0,30 cube
+Maison 10,1,30 maison2 4
+#Maison 11,0,30 cube
+Maison 12,0,30 cube
+#Maison 13,0,30 cube
+Maison 14,1,30 maison2 4
+#Maison 15,0,30 cube
+Maison 16,0,30 cube
+Maison 17,0,30 cube
+Maison 18,0,30 cube
+#Maison 19,0,30 cube
+#Maison 20,0,30 cube
+Maison 21,2,30 maison4 15
+#Maison 22,0,30 cube
+#Maison 23,0,30 cube
+Maison 24,0,30 cube
+Maison 25,0,30 cube
+Maison 26,0,30 cube
+Maison 27,0,30 cube
+Maison 28,0,30 cube
+Maison 29,0,30 cube
+#Maison 30,0,30 cube
+#Maison 31,0,30 cube
+Maison 32,3,30 maison3 10
+#Maison 33,0,30 cube
+#Maison 34,0,30 cube
+Maison 35,0,30 cube
+Maison 36,0,30 cube
+Maison 37,0,30 cube
+Maison 38,0,30 cube
+Maison 39,0,30 cube
+Maison 40,0,30 cube
+Maison 41,0,30 cube
+Maison 42,0,30 cube
+Maison 43,0,30 cube
+Maison 44,0,30 cube
+Maison 45,0,30 cube
+Maison 46,0,30 cube
+Maison 47,0,30 cube
+Maison 48,0,30 cube
+Maison 49,0,30 cube
+Maison 50,0,30 cube
+#Maison 51,0,30 cube
+#Maison 52,0,30 cube 
+Maison 53,3,30 maison3 10
+#Maison 54,0,30 cube
+#Maison 55,0,30 cube
+Maison 56,0,30 cube
+Maison 57,0,30 cube
+Maison 58,0,30 cube
+Maison 59,0,30 cube
+Maison 60,0,30 cube
+Maison 61,0,30 cube
+Maison 62,0,30 cube
+Maison 63,0,30 cube
+Maison 64,0,30 cube
+Maison 65,0,30 cube
+Maison 66,0,30 cube
+Maison 67,0,30 cube
+Maison 68,0,30 cube
+Maison 69,0,30 cube
+Maison 70,0,30 cube
+#Maison 71,0,30 cube
+#Maison 72,0,30 cube
+Maison 73,3,30 maison3 10
+#Maison 74,0,30 cube
+#Maison 75,0,30 cube
+Maison 76,0,30 cube
+Maison 77,0,30 cube
+Maison 78,0,30 cube
+Maison 79,0,30 cube
+
+#Maison 0,1,30 cube
+#Maison 1,1,30 cube
+#Maison 2,1,30 cube
+Maison 3,1,30 cube
+#Maison 4,1,30 cube
+#Maison 5,1,30 cube
+#Maison 6,1,30 cube
+#Maison 7,1,30 cube
+#Maison 8,1,30 cube
+#Maison 9,1,30 cube
+#Maison 10,1,30 cube
+#Maison 11,1,30 cube
+#Maison 12,1,30 cube
+#Maison 13,1,30 cube
+#Maison 14,1,30 cube
+#Maison 15,1,30 cube
+#Maison 16,1,30 cube
+Maison 17,1,30 cube
+#Maison 18,1,30 cube
+#Maison 19,1,30 cube
+#Maison 20,1,30 cube
+#Maison 21,1,30 cube
+#Maison 22,1,30 cube
+#Maison 23,1,30 cube
+#Maison 24,1,30 cube
+Maison 25,1,30 cube
+#Maison 26,1,30 cube
+Maison 27,1,30 cube
+#Maison 28,1,30 cube
+Maison 29,1,30 cube
+#Maison 30,1,30 cube
+#Maison 31,1,30 cube
+#Maison 32,1,30 cube
+#Maison 33,1,30 cube
+#Maison 34,1,30 cube
+Maison 35,1,30 cube
+#Maison 36,1,30 cube
+Maison 37,1,30 cube
+#Maison 38,1,30 cube
+Maison 39,1,30 cube
+#Maison 40,1,30 cube
+Maison 41,1,30 cube
+#Maison 42,1,30 cube
+Maison 43,1,30 cube
+#Maison 44,1,30 cube
+Maison 45,1,30 cube
+#Maison 46,1,30 cube
+Maison 47,1,30 cube
+#Maison 48,1,30 cube
+Maison 49,1,30 cube
+#Maison 50,1,30 cube
+#Maison 51,1,30 cube
+#Maison 52,1,30 cube
+#Maison 53,1,30 cube
+#Maison 54,1,30 cube
+#Maison 55,1,30 cube
+#Maison 56,1,30 cube
+Maison 57,1,30 cube
+#Maison 58,1,30 cube
+Maison 59,1,30 cube
+#Maison 60,1,30 cube
+Maison 61,1,30 cube
+#Maison 62,1,30 cube
+Maison 63,1,30 cube
+#Maison 64,1,30 cube
+Maison 65,1,30 cube
+#Maison 66,1,30 cube
+Maison 67,1,30 cube
+#Maison 68,1,30 cube
+Maison 69,1,30 cube
+#Maison 70,1,30 cube
+#Maison 71,1,30 cube
+#Maison 72,1,30 cube
+#Maison 73,1,30 cube
+#Maison 74,1,30 cube
+#Maison 75,1,30 cube
+#Maison 76,1,30 cube
+Maison 77,1,30 cube
+#Maison 78,1,30 cube
+Maison 79,1,30 cube
+
+
+#Maison 0,2,30 cube
+#Maison 1,2,30 cube
+#Maison 2,2,30 cube
+Maison 3,2,30 cube
+Maison 4,2,30 cube
+#Maison 5,2,30 cube
+#Maison 6,2,30 cube
+#Maison 7,2,30 cube
+Maison 8,2,30 cube
+#Maison 9,2,30 cube
+#Maison 10,2,30 cube
+#Maison 11,2,30 cube
+Maison 12,2,30 cube
+#Maison 13,2,30 cube
+#Maison 14,2,30 cube
+#Maison 15,2,30 cube
+Maison 16,2,30 cube
+Maison 17,2,30 cube
+Maison 18,2,30 cube
+#Maison 19,2,30 cube
+#Maison 20,2,30 cube
+#Maison 21,2,30 cube
+#Maison 22,2,30 cube
+#Maison 23,2,30 cube
+Maison 24,2,30 cube
+Maison 25,2,30 cube
+Maison 26,2,30 cube
+Maison 27,2,30 cube
+Maison 28,2,30 cube
+Maison 29,2,30 cube
+#Maison 30,2,30 cube
+#Maison 31,2,30 cube
+#Maison 32,2,30 cube
+#Maison 33,2,30 cube
+#Maison 34,2,30 cube
+Maison 35,2,30 cube
+Maison 36,2,30 cube
+Maison 37,2,30 cube
+Maison 38,2,30 cube
+Maison 39,2,30 cube
+Maison 40,2,30 cube
+Maison 41,2,30 cube
+Maison 42,2,30 cube
+Maison 43,2,30 cube
+Maison 44,2,30 cube
+Maison 45,2,30 cube
+Maison 46,2,30 cube
+Maison 47,2,30 cube
+Maison 48,2,30 cube
+Maison 49,2,30 cube
+Maison 50,2,30 cube
+#Maison 51,2,30 cube
+#Maison 52,2,30 cube
+#Maison 53,2,30 cube
+#Maison 54,2,30 cube
+#Maison 55,2,30 cube
+Maison 56,2,30 cube
+Maison 57,2,30 cube
+Maison 58,2,30 cube
+Maison 59,2,30 cube
+Maison 60,2,30 cube
+Maison 61,2,30 cube
+Maison 62,2,30 cube
+Maison 63,2,30 cube
+Maison 64,2,30 cube
+Maison 65,2,30 cube
+Maison 66,2,30 cube
+Maison 67,2,30 cube
+Maison 68,2,30 cube
+Maison 69,2,30 cube
+Maison 70,2,30 cube
+#Maison 71,2,30 cube
+#Maison 72,2,30 cube
+#Maison 73,2,30 cube
+#Maison 74,2,30 cube
+#Maison 75,2,30 cube
+Maison 76,2,30 cube
+Maison 77,2,30 cube
+Maison 78,2,30 cube
+Maison 79,2,30 cube
+
+Maison 0,3,30 sphereVerte
+Maison 1,3,30 cube
+Maison 2,3,30 sphereVerte
+Maison 3,3,30 cube
+Maison 4,3,30 sphereVerte
+Maison 5,3,30 cube
+Maison 6,3,30 sphereVerte
+Maison 7,3,30 cube
+Maison 8,3,30 sphereVerte
+Maison 9,3,30 cube
+Maison 10,3,30 sphereVerte
+Maison 11,3,30 cube
+Maison 12,3,30 sphereVerte
+Maison 13,3,30 cube
+Maison 14,3,30 sphereVerte
+Maison 15,3,30 cube
+Maison 16,3,30 sphereVerte
+Maison 17,3,30 cube
+Maison 18,3,30 sphereVerte
+#Maison 19,3,30 cube
+#Maison 20,3,30 sphereVerte
+#Maison 21,3,30 cube
+#Maison 22,3,30 sphereVerte
+#Maison 23,3,30 cube
+Maison 24,3,30 sphereVerte
+Maison 25,3,30 cube
+Maison 26,3,30 sphereVerte
+Maison 27,3,30 cube
+Maison 28,3,30 sphereVerte
+Maison 29,3,30 cube
+#Maison 30,3,30 sphereVerte
+#Maison 31,3,30 cube
+#Maison 32,3,30 sphereVerte
+#Maison 33,3,30 cube
+#Maison 34,3,30 sphereVerte
+Maison 35,3,30 cube
+Maison 36,3,30 sphereVerte
+Maison 37,3,30 cube
+Maison 38,3,30 sphereVerte
+Maison 39,3,30 cube
+Maison 40,3,30 sphereVerte
+Maison 41,3,30 cube
+Maison 42,3,30 sphereVerte
+Maison 43,3,30 cube
+Maison 44,3,30 sphereVerte
+Maison 45,3,30 cube
+Maison 46,3,30 sphereVerte
+Maison 47,3,30 cube
+Maison 48,3,30 sphereVerte
+Maison 49,3,30 cube
+Maison 50,3,30 sphereVerte
+#Maison 51,3,30 cube
+#Maison 52,3,30 sphereVerte
+#Maison 53,3,30 cube
+#Maison 54,3,30 sphereVerte
+#Maison 55,3,30 cube
+Maison 56,3,30 sphereVerte
+Maison 57,3,30 cube
+Maison 58,3,30 sphereVerte
+Maison 59,3,30 cube
+Maison 60,3,30 sphereVerte
+Maison 61,3,30 cube
+Maison 62,3,30 sphereVerte
+Maison 63,3,30 cube
+Maison 64,3,30 sphereVerte
+Maison 65,3,30 cube
+Maison 66,3,30 sphereVerte
+Maison 67,3,30 cube
+Maison 68,3,30 sphereVerte
+Maison 69,3,30 cube
+Maison 70,3,30 sphereVerte
+#Maison 71,3,30 cube
+#Maison 72,3,30 sphereVerte
+#Maison 73,3,30 cube
+#Maison 74,3,30 sphereVerte
+#Maison 75,3,30 cube
+Maison 76,3,30 sphereVerte
+Maison 77,3,30 cube
+Maison 78,3,30 sphereVerte
+Maison 79,3,30 cube
+
+
+munitions 200
+
+VAGUE 1
+score 12
+pause 400
+Missile 4,0,4 0
+Missile 4,0,4 0
+Missile 4,0,4 1000
+Missile 4,0,4 1000
+Missile 4,0,4 1000
+Missile 4,0,4 1000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 2000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+Missile 4,0,4 3000
+
+VAGUE 2
+score 134
+pause 10000
+Missile 4,0,4 0
+Missile 4,0,4 0
+Missile 4,0,4 1000
+Missile 4,0,4 2000
+Missile 4,0,4 3000
+Missile 4,0,4 3050
+Missile 4,0,4 3100
+Missile 4,0,4 3150
+Missile 4,0,4 3200
+
+VAGUE 3
+score 344
+pause 10000
+Missile 4,0,4 0
+Missile 4,0,4 0
+Missile 4,0,4 1000
+Missile 4,0,4 2000
+Missile 4,0,4 3000
+Missile 4,0,4 3050
+Missile 4,0,4 3100
+Missile 4,0,4 3150
+Missile 4,0,4 3200

@@ -1,0 +1,13 @@
+package net.stinfoservices.helias.renaud.tempest.tools.factory;
+
+public class FontLoader {
+
+	private static FontLoader instance;
+	public static FontLoader getInstance() {
+		if (instance==null) {
+			instance = new FontLoader();
+		}
+		return instance;
+	}
+
+}

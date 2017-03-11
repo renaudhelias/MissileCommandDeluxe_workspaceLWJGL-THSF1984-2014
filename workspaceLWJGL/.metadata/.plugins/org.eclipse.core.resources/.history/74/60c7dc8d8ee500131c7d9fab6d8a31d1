@@ -1,0 +1,29 @@
+#distance physique entre les deux smileys
+LARGEUR_PORTE=2.5
+#largeur physique de l'image projetée
+LARGEUR_VP=4.5
+#hauteur physique de l'image projetée
+HAUTEUR_PORTE=1.8
+#distance entre le centre de rotation physique du plateau et l'écran physique
+DISTANCE_PORTE=2.5
+
+#Les missiles du satellite sont lent, le plateau doit pouvoir tourner d'un extrème à l'autre avant que le missile atteigne une maison ! 
+FORCE_MISSILE_SATELLITE=3.8
+#Les missiles de tir sont rapide, ils doivent atteindre les missiles satellite avant qu'ils touchent les maison...
+FORCE_MISSILE_TIR=30
+
+RATIO_MISSILE=2.0
+RATIO_EXPLOSION=6.0
+
+#Il faut mieux carré car sinon pb calcul hors zone
+#circonference (/!\ TAILLE_GRILLE_X==TAILLE_GRILLE_Z)
+TAILLE_GRILLE_X=80
+#hauteur
+TAILLE_GRILLE_Y=80
+#rayon (TAILLE_GRILLE_Z=TAILLE_GRILLE_Y*4)
+TAILLE_GRILLE_Z=80
+#HAUTEUR DE LA ZONE EN PIXELS : 2^X
+ZONE_HEIGHT=512
+
+#Distance de tir de notre canon
+AUTOCOMPUTE_MISSILE_DISTANCE=10.4

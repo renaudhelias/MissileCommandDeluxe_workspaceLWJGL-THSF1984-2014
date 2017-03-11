@@ -1,0 +1,302 @@
+package net.stinfoservices.helias.renaud.tempest.tools.factory;
+
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+
+public class Image3D implements IImage3D {
+
+	private List<String> groupNames = new ArrayList<String>();
+	private List<String> mtlNames = new ArrayList<String>();
+	private Map<String,String> groupMTL = new HashMap<String,String>();
+	private List<List<Point3D.Integer>> triangle = new ArrayList<List<Point3D.Integer>>();
+	private List<List<Point3D.Double>> vertex = new ArrayList<List<Point3D.Double>>();
+	
+	private Map<String,Point3D.Double> mtlKa = new HashMap<String,Point3D.Double>();
+	private Map<String,Point3D.Double> mtlKd = new HashMap<String,Point3D.Double>();
+	private Map<String,Point3D.Double> mtlKs = new HashMap<String,Point3D.Double>();
+	
+	public Image3D() {
+	}
+	
+	@Override
+	public boolean render(int calque) {
+		
+		GL11.glPushMatrix();
+		
+//		GL11.glColor4f(1.0f,1.0f,1.0f,1.0f);
+		
+//		if (isOriented()) {
+//			Point3D.Double orientationVector = getOrientation();
+//			if (orientationVector != null) {
+//				try {
+//					GL11.glRotated(Tools.angleDegreesZ(orientationVector), 1,1,1);
+//				} catch (NaNException e) {
+//					//nothing
+//				}
+//			}
+//		}
+
+		
+
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+
+		for (int i = 0; i < getNbFigures(); i++) {
+			
+			if (groupMTL.containsKey(groupNames.get(i))) {
+				String mtl = groupMTL.get(groupNames.get(i));
+				
+
+				
+				if (mtlKa.containsKey(mtl)) {
+					FloatBuffer ambianceLight = BufferUtils.createFloatBuffer(4);
+					ambianceLight.put(new float []{0.1f,1.0f,0.1f,1.0f});
+					ambianceLight.flip();
+					GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT, ambianceLight);
+				}
+				if (mtlKd.containsKey(mtl)) {
+					FloatBuffer diffuseLight = BufferUtils.createFloatBuffer(4);
+					diffuseLight.put(new float []{0.1f,1.0f,0.1f,1.0f});
+					diffuseLight.flip();
+					GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_DIFFUSE, diffuseLight);
+					GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_EMISSION, diffuseLight);
+				}
+				if (mtlKs.containsKey(mtl)) {
+					FloatBuffer specularLight = BufferUtils.createFloatBuffer(4);
+					specularLight.put(new float []{0.1f,1.0f,0.1f,1.0f});
+					specularLight.flip();
+					GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_SPECULAR, specularLight);
+				}
+			}
+				
+			
+			
+			DoubleBuffer vertexArray = this.getGlVertexPointer(i);
+			vertexArray.flip();
+			GL11.glVertexPointer(3,0, vertexArray);
+
+			IntBuffer trianglesArray = this.getGlDrawElements(i);
+			trianglesArray.flip();
+			GL11.glDrawElements(GL11.GL_TRIANGLES, trianglesArray);
+		}
+		GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+		GL11.glDisable(GL11.GL_BLEND);
+
+		GL11.glPopMatrix();
+
+		return true;
+	}
+
+	@Override
+	public double getRayon() {
+		return 0.5;
+	}
+
+	@Override
+	public Point3D.Double getPosition() {
+		return new Point3D.Double();
+	}
+
+	@Override
+	public boolean isOriented() {
+		return true;
+	}
+
+	@Override
+	public Point3D.Double getOrientation() {
+		return new Point3D.Double(0,0,1);
+	}
+	
+	@Override
+	public int getNbFigures() {
+		return groupNames.size();
+	}
+
+	@Override
+	public DoubleBuffer getGlTexCoordPointer(int i) {
+		throw new Error("Not implemented yet :p");
+	}
+
+	@Override
+	public DoubleBuffer getGlVertexPointer(int i) {
+		DoubleBuffer vertexArray = BufferUtils.createDoubleBuffer(vertex.get(i).size()*3);
+		double [] buff =new double [vertex.get(i).size()*3];
+		for (int v = 0;v<vertex.get(i).size();v++) {
+			buff[v*3+0]=vertex.get(i).get(v).x;
+			buff[v*3+1]=vertex.get(i).get(v).y;
+			buff[v*3+2]=vertex.get(i).get(v).z;
+		}
+		vertexArray.put(buff);
+		return vertexArray;
+	}
+
+	@Override
+	public IntBuffer getGlDrawElements(int i) {
+		IntBuffer triangleArray = BufferUtils.createIntBuffer(triangle.get(i).size()*3);
+		int [] buff =new int [triangle.get(i).size()*3];
+		for (int v = 0;v<triangle.get(i).size();v++) {
+			buff[v*3+0]=triangle.get(i).get(v).x;
+			buff[v*3+1]=triangle.get(i).get(v).y;
+			buff[v*3+2]=triangle.get(i).get(v).z;
+		}
+		triangleArray.put(buff);
+		return triangleArray;
+	}
+
+	@Override
+	public double getWidth() {
+		return 1.0;
+	}
+
+	@Override
+	public double getHeight() {
+		return 1.0;
+	}
+
+	@Override
+	public double getDepth() {
+		return 1.0;
+	}
+
+	public void welcomeObjet(String group) {
+		groupNames.add(group);
+		triangle.add(new ArrayList<Point3D.Integer>());
+		vertex.add(new ArrayList<Point3D.Double>());
+	}
+
+	public void addTriangle(int a, int b, int c) {
+		a--;
+		b--;
+		c--;
+		int offset=0;
+		int i = triangle.size()-1;
+		for (int v=0;v<i;v++) {
+			offset+=vertex.get(v).size();
+		}
+		if (a-offset<0 || b-offset<0 ||c-offset <0) {
+			throw new Error("inconsistance (i="+i+")");
+		}
+		if (a-offset>vertex.get(i).size()) {
+			throw new Error("inconsistance (i="+i+" : "+(a-offset)+">"+vertex.get(i).size()+")");
+		}
+		if (b-offset>vertex.get(i).size()) {
+			throw new Error("inconsistance (i="+i+" : "+(b-offset)+">"+vertex.get(i).size()+")");
+		}
+		if (c-offset>vertex.get(i).size()) {
+			throw new Error("inconsistance (i="+i+" : "+(c-offset)+">"+vertex.get(i).size()+")");
+		}
+		
+		triangle.get(triangle.size()-1).add(new Point3D.Integer(a-offset,b-offset,c-offset));
+	}
+
+	public void addVertex(double x, double y,
+			double z) {
+		vertex.get(vertex.size()-1).add(new Point3D.Double(x,y,z));
+	}
+
+	public void normalize() {
+		System.out.println("finish him !");
+		Double minX=null;
+		Double minY=null;
+		Double minZ=null;
+		Double maxX=null;
+		Double maxY=null;
+		Double maxZ=null;
+		
+		for (int i=0;i<groupNames.size();i++) {
+			for (int v=0;v<vertex.get(i).size();v++) {
+				if (minX == null) {
+					minX = vertex.get(i).get(v).x;
+				} else {
+					minX = Math.min(minX,vertex.get(i).get(v).x);
+				}
+				if (minY == null) {
+					minY = vertex.get(i).get(v).y;
+				} else {
+					minY = Math.min(minY,vertex.get(i).get(v).y);
+				}
+				if (minZ == null) {
+					minZ = vertex.get(i).get(v).z;
+				} else {
+					minZ = Math.min(minZ,vertex.get(i).get(v).z);
+				}
+				
+				if (maxX == null) {
+					maxX = vertex.get(i).get(v).x;
+				} else {
+					maxX = Math.max(maxX,vertex.get(i).get(v).x);
+				}
+				if (maxY == null) {
+					maxY = vertex.get(i).get(v).y;
+				} else {
+					maxY = Math.max(maxY,vertex.get(i).get(v).y);
+				}
+				if (maxZ == null) {
+					maxZ = vertex.get(i).get(v).z;
+				} else {
+					maxZ = Math.max(maxZ,vertex.get(i).get(v).z);
+				}
+			}
+		}
+		double width = maxX-minX;
+		double height = maxY-minY;
+		double depth = maxZ-minZ;
+		
+		double centerX = minX+width/2;
+		double centerY = minY+height/2;
+		double centerZ = minZ+depth/2;
+		System.out.println("center :"+centerX+" "+ centerY+" "+ centerZ);
+		for (int i=0;i<groupNames.size();i++) {
+			for (int v=0;v<vertex.get(i).size();v++) {
+				vertex.get(i).get(v).x-=centerX;
+				vertex.get(i).get(v).y-=centerY;
+				vertex.get(i).get(v).z-=centerZ;
+//				System.out.println("v :"+vertex.get(i).get(v));		
+			}
+		}
+		// zoom est selon le rep�re. donc des deux c�t�s � la fois, donc sqrt.
+		double maxSize = Math.max(Math.max(width,height), depth);
+//		maxSize = Math.sqrt(maxSize);
+		for (int i=0;i<groupNames.size();i++) {
+			for (int v=0;v<vertex.get(i).size();v++) {
+				vertex.get(i).get(v).x/=maxSize;
+				vertex.get(i).get(v).y/=maxSize;
+				vertex.get(i).get(v).z/=maxSize;
+				System.out.println("v :"+vertex.get(i).get(v));	
+			}
+		}
+		
+	}
+
+	public void addKa(double r, double g, double b) {
+		mtlKa.put(groupMTL.get(groupMTL.size()-1), new Point3D.Double(r,g,b));
+	}
+	public void addKd(double r, double g, double b) {
+		mtlKd.put(groupMTL.get(groupMTL.size()-1), new Point3D.Double(r,g,b));
+	}
+	public void addKs(double r, double g, double b) {
+		mtlKs.put(groupMTL.get(groupMTL.size()-1), new Point3D.Double(r,g,b));
+	}
+
+	public void welcomeUseMTL(String mtlName) {
+		groupMTL.put(groupNames.get(groupNames.size()-1), mtlName);
+	}
+
+	public void welcomeNewMTL(String mtlName) {
+		mtlNames.add(mtlName);
+	}
+
+
+}

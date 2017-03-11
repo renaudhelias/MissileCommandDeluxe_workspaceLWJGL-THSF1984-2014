@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.dialogs.FilteredResourcesSelectionDialog">
+		<item value="true" key="ShowStatusLine"/>
+		<item value="false" key="ShowDerived"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;workingSet workingSetName=&quot;&quot;/&gt;" key="WorkingSet"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;History&gt;&#x0D;&#x0A;&lt;historyRootNode&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/agent/ICircle3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/level/terrain/IZone.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/agent/IRenderer.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/tools/Point3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/IPosition3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/agent/IMove3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/Camera.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/agent/projectile/special/Marqueur3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/level/terrain/Puits.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/level/properties/Scenario.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;infoNode path=&quot;/Arc2D/src/net/stinfoservices/helias/renaud/tempest/agent/projectile/Missile3D.java&quot; type=&quot;1&quot;/&gt;&#x0D;&#x0A;&lt;/historyRootNode&gt;&#x0D;&#x0A;&lt;/History&gt;" key="History"/>
+		<section name="DialogBoundsSettings">
+			<item value="624" key="DIALOG_WIDTH"/>
+			<item value="29" key="DIALOG_Y_ORIGIN"/>
+			<item value="663" key="DIALOG_HEIGHT"/>
+			<item value="292" key="DIALOG_X_ORIGIN"/>
+			<item value="1|Tahoma|8.5|0|WINDOWS|1|-17|0|0|0|400|0|0|0|1|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+		</section>
+	</section>
+	<section name="ExternalProjectImportWizard">
+		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
+		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
+	</section>
+	<section name="NewWizardAction">
+		<item value="org.eclipse.jdt.ui.wizards.JavaProjectWizard" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.ui.Basic"/>
+			<item value="org.eclipse.jdt.ui.java"/>
+		</list>
+	</section>
+	<section name="CleanDialogSettings">
+		<item value="565" key="DIALOG_WIDTH"/>
+		<item value="81" key="DIALOG_Y_ORIGIN"/>
+		<item value="572" key="DIALOG_X_ORIGIN"/>
+		<item value="379" key="DIALOG_HEIGHT"/>
+		<item value="false" key="TOGGLE_SELECTED"/>
+	</section>
+</section>

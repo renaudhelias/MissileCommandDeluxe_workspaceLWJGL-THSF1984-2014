@@ -1,0 +1,408 @@
+package net.stinfoservices.helias.renaud.tempest;
+
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.geom.Point2D;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import net.stinfoservices.helias.renaud.tempest.level.CalibrateLevel;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel3D;
+import net.stinfoservices.helias.renaud.tempest.level.IScore;
+import net.stinfoservices.helias.renaud.tempest.level.Level0;
+import net.stinfoservices.helias.renaud.tempest.level.Level2;
+import net.stinfoservices.helias.renaud.tempest.level.ScoreLevel;
+import net.stinfoservices.helias.renaud.tempest.level.StartLevel;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.Forteress;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.Killapede;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Tools;
+import net.stinfoservices.helias.renaud.tempest.tools.manager.PrimitiveMouseManager;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Timer;
+import org.newdawn.slick.openal.SoundStore;
+
+/**
+ * http://lwjgl.org/wiki/index.php?title=Main_Page Basics
+ * 
+ * 
+ * http://www.blender-models.com models
+ * 
+ * squelette :
+ * http://www.blender-models.com/model-downloads/humans/id/gaston-lagaffe/
+ * 
+ * obj : lors de l'export, cocher "animation"
+ * 
+ * @author STI
+ * 
+ */
+public class TempestMain implements IScreen {
+	
+	private static final int SCREEN_WIDTH = 800;
+	private static final int SCREEN_HEIGHT = 600;
+	private static final int SCREEN_DEPTH = 500*2; // rotate du terrain de 500x500
+	
+	JLabel message = new JLabel("Tempest demo");
+	
+	private ILevel level;
+	int levelNumber = -1;
+	
+	ILevel [] levels;
+	
+	
+	public TempestMain() {
+	}
+	public void start() {
+		try {
+//			Display.setVSyncEnabled(true);
+			listDisplayModes();
+			fenetre(true);
+			Display.create();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+		// init OpenGL here
+		GL11.glLoadIdentity();
+		// le Z est NEGATIF mais ça n'empèche qu'ici les paramètres sont rentrés dans l'autre sens comme si POSITIF... ce sont des tailles en fait
+		GL11.glOrtho(-SCREEN_WIDTH, SCREEN_WIDTH, -SCREEN_HEIGHT/4, SCREEN_HEIGHT, 0, SCREEN_DEPTH);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+//		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glClearColor(0.0F,0.0F,0.0F,1.0F);
+
+		
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);
+	    //
+//		lumiere(); la lumiere est sur la camera
+//		
+		levels = new ILevel[] {new CalibrateLevel(this),  new Level2(this),  new StartLevel(this), new Level0(this), new ScoreLevel(this)};
+		
+		// init serveur
+//		serveur = new Serveur();
+		
+		// init ennemis
+		initGame(false);
+		
+		while (!Display.isCloseRequested()) {
+			// inputs 
+			pollInputs();
+			
+//			if (level instanceof Level0) {
+//				serveur.poll((Level0)level);
+//			} else {
+//				serveur.poll(null);
+//			}
+			
+			// tick
+			Timer.tick();
+			
+			// terrain et bulles
+			terrainUpdate();
+
+			// matrix
+			matrixUpdate();
+
+			Display.sync(60);
+
+			// render OpenGL here
+			Display.update();
+			
+			checkScore();
+		}
+
+		Display.destroy();
+		AL.destroy(); // sound system
+//		serveur.stop();
+//		try {
+//			serveur.wait();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		System.exit(0);
+	}
+
+	public static void lumiere() {
+		// what ?
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+//		GL11.glShadeModel(GL11.GL_FLAT);
+		
+		// lumière globale
+		FloatBuffer globalAmbiantLight = BufferUtils.createFloatBuffer(4);
+		globalAmbiantLight.put(new float []{0.8f,0.8f,0.8f,1.0f});
+		globalAmbiantLight.flip();
+		// lumière "global" qui rebondie pas normalement (murs)
+		FloatBuffer ambiantLight = BufferUtils.createFloatBuffer(4);
+		ambiantLight.put(new float []{0.8f,0.8f,0.8f,1.0f});
+		ambiantLight.flip();
+		// la vrai lumière qui éclair et rebondie logiquement (objets)
+		FloatBuffer diffuseLight = BufferUtils.createFloatBuffer(4);
+		diffuseLight.put(new float []{1.0f,1.0f,1.0f,1.0f});
+		diffuseLight.flip();
+		// ce qui nique les yeux (genre on voit des rayons)
+		FloatBuffer specularLight = BufferUtils.createFloatBuffer(4);
+		specularLight.put(new float []{1.0f,1.0f,1.0f,1.0f});
+		specularLight.flip();
+		
+		
+		// by default LIGHT0 is on, so I change it
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, ambiantLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, ambiantLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, ambiantLight);
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, globalAmbiantLight);
+//buggy lol		
+		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_LIGHT0);
+		GL11.glEnable(GL11.GL_DEPTH_TEST); // déjà fait mais bon
+		
+	}
+	
+	public static void directionLumiere(Point3D.Double origine, Point3D.Double direction, double angle) {
+		
+		FloatBuffer positionLight = BufferUtils.createFloatBuffer(4);
+		positionLight.put(new float []{(float)origine.x,(float)origine.y,(float)origine.z,0.0f});
+		positionLight.flip();
+		FloatBuffer directionLight = BufferUtils.createFloatBuffer(4);
+		directionLight.put(new float []{(float)direction.x,(float)direction.y,(float)direction.z,0});
+		directionLight.flip();
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION,positionLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPOT_DIRECTION,directionLight);
+		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_SPOT_CUTOFF, (float)angle);
+
+	}
+	
+	private void listDisplayModes() throws LWJGLException {
+		DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+		for (int i=0;i<modes.length;i++) {
+		    DisplayMode current = modes[i];
+		    System.out.println(current.getWidth() + "x" + current.getHeight() + "x" +
+		                        current.getBitsPerPixel() + " " + current.getFrequency() + "Hz");
+		}
+
+	}
+	private void fenetre(boolean fenetre) throws LWJGLException {
+		if (fenetre) {
+			Display.setDisplayMode(new DisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT));
+			JFrame jFrame = new JFrame("Tempest game");
+			// manque Display.destroy
+			jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			jFrame.setLayout(new BorderLayout());
+			Canvas parent = new Canvas();
+			jFrame.add(parent, BorderLayout.CENTER);
+			jFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			jFrame.setVisible(true);
+			jFrame.add(message, BorderLayout.SOUTH);
+			Display.setParent(parent);
+		} else {
+			// 1280x800x24 55Hz
+//			1280x800x24 56Hz
+//			1280x960x24 54Hz
+//			1152x864x24 57Hz
+//			640x480x24 62Hz
+//			1280x1024x24 60Hz
+//			640x480x24 63Hz
+//			1280x1024x24 61Hz
+//			1280x1024x24 50Hz
+//			1280x1024x24 51Hz
+//			1280x1024x24 52Hz
+//			1280x1024x24 53Hz
+//			1024x768x24 58Hz
+//			1280x720x24 64Hz
+//			1024x768x24 59Hz
+			// bug parfois
+//			setDisplayMode(800,600,true);
+			setDisplayMode(1280,1024,true);
+		}
+
+	}
+	
+	/**
+	 * Set the display mode to be used 
+	 * 
+	 * @param width The width of the display required
+	 * @param height The height of the display required
+	 * @param fullscreen True if we want fullscreen mode
+	 */
+	private void setDisplayMode(int width, int height, boolean fullscreen) {
+
+	    // return if requested DisplayMode is already set
+	    if ((Display.getDisplayMode().getWidth() == width) && 
+	        (Display.getDisplayMode().getHeight() == height) && 
+		(Display.isFullscreen() == fullscreen)) {
+		    return;
+	    }
+
+	    try {
+	        DisplayMode targetDisplayMode = null;
+			
+		if (fullscreen) {
+		    DisplayMode[] modes = Display.getAvailableDisplayModes();
+		    int freq = 0;
+					
+		    for (int i=0;i<modes.length;i++) {
+		        DisplayMode current = modes[i];
+						
+			if ((current.getWidth() == width) && (current.getHeight() == height)) {
+			    if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
+			        if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
+				    targetDisplayMode = current;
+				    freq = targetDisplayMode.getFrequency();
+	                        }
+	                    }
+
+			    // if we've found a match for bpp and frequence against the 
+			    // original display mode then it's probably best to go for this one
+			    // since it's most likely compatible with the monitor
+			    if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel()) &&
+	                        (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
+	                            targetDisplayMode = current;
+	                            break;
+	                    }
+	                }
+	            }
+	        } else {
+	            targetDisplayMode = new DisplayMode(width,height);
+	        }
+
+	        if (targetDisplayMode == null) {
+	            System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
+	            return;
+	        }
+
+	        Display.setDisplayMode(targetDisplayMode);
+	        Display.setFullscreen(fullscreen);
+				
+	    } catch (LWJGLException e) {
+	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
+	    }
+	}
+
+	
+	private void initGame(boolean winner) {
+		// level up
+		PrimitiveMouseManager.getInstance().resetListeners();
+		levelNumber++;
+		if (levelNumber>=levels.length) {
+			System.exit(0);
+			levelNumber = 0;
+		}
+		level = levels[levelNumber];
+		if (level instanceof IScore) {
+			((IScore)level).initScore(100, winner);
+		}
+		if (level instanceof ILevel3D) {
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			level.setArea(new Forteress());
+		} else {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			level.setArea(new Killapede());
+		}
+		
+		Tools.nbSteps(true);
+		try {
+			level.generateMonstres();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// next
+			System.exit(0);
+			initGame(winner);
+		}
+		// purge
+		level.step();
+	}
+
+	private void checkScore() {
+		Boolean finished = level.finished();
+		if (finished != null) {
+			if (finished) {
+				message.setText("Score : you win !");
+			} else {
+				message.setText("Score : you loss !");
+			}
+			initGame(finished);
+		}
+	}
+
+	
+
+	private void terrainUpdate() {
+		int nbSteps = Tools.nbSteps(false);
+		for (int i =0;i< nbSteps; i++) {
+			// step
+			level.step();
+		}
+		SoundStore.get().poll(0);
+	}
+
+	private void matrixUpdate() {
+		// Clear the screen and depth buffer
+		GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+		
+		
+		int calque = 0;
+		boolean fini = false;
+		// c'est le level qui devrait fournir la camera.
+		GL11.glPushMatrix();
+		level.getCamera().render(0);
+		while (!fini) {
+			// draw things.
+			fini = !level.render(calque);
+			calque++;
+		}
+		GL11.glPopMatrix();
+		
+	}
+
+	
+	private void pollInputs() {
+		while (Keyboard.next()) {
+			int key = Keyboard.getEventKey();
+			boolean keyState = Keyboard.getEventKeyState();
+			level.key(key,keyState);
+		}
+		
+		while (Mouse.next()) {
+			int button = Mouse.getEventButton();
+			boolean buttonState = Mouse.getEventButtonState();
+			int x = Mouse.getEventX();
+			int y = Mouse.getEventY();
+			
+			// c'est au level de gérer la projection des controles aussi 
+			level.mouse(button,buttonState,new Point2D.Double(x,y));
+		}
+		
+		PrimitiveMouseManager.getInstance().step();
+		
+
+	}
+
+	public static void main(String[] argv) {
+		TempestMain displayExample = new TempestMain();
+		displayExample.start();
+	}
+
+	@Override
+	public int getScreenWidth() {
+		return SCREEN_WIDTH;
+	}
+
+	@Override
+	public int getScreenHeight() {
+		return SCREEN_HEIGHT;
+	}
+	
+}

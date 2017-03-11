@@ -1,0 +1,410 @@
+package net.stinfoservices.helias.renaud.tempest.level;
+
+import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.lwjgl.input.Mouse;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
+import net.stinfoservices.helias.renaud.tempest.Camera;
+import net.stinfoservices.helias.renaud.tempest.ICamera;
+import net.stinfoservices.helias.renaud.tempest.IPosition3D;
+import net.stinfoservices.helias.renaud.tempest.IScreen;
+import net.stinfoservices.helias.renaud.tempest.agent.ICircle3D;
+import net.stinfoservices.helias.renaud.tempest.agent.IController;
+import net.stinfoservices.helias.renaud.tempest.agent.IDangerous;
+import net.stinfoservices.helias.renaud.tempest.agent.IMove;
+import net.stinfoservices.helias.renaud.tempest.agent.IRenderer;
+import net.stinfoservices.helias.renaud.tempest.agent.friend.Maison3D;
+import net.stinfoservices.helias.renaud.tempest.agent.friend.attaquant.MissileLauncher3D;
+import net.stinfoservices.helias.renaud.tempest.agent.monstre.IMonstre;
+import net.stinfoservices.helias.renaud.tempest.agent.monstre.Satellite;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.IProjectile3D;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.Missile;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.factory.MissileFactory3D;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.IArea;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.IArea3D;
+import net.stinfoservices.helias.renaud.tempest.server.IPullMissiles;
+import net.stinfoservices.helias.renaud.tempest.server.MissileDTO;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+
+/**
+ * Level 0 is space invader-like.
+ * 
+ * @author STI
+ * 
+ */
+public class Level2 implements ILevel3D, IPullMissiles {
+
+//	public enum PHASES {PHASE_0, PHASE_1, PHASE_2, PHASE_3, PHASE_4, PHASE_5, PHASE_6, PHASE_7};
+	private final static boolean DEMO= true;
+
+	private List<IMonstre> monstres = new ArrayList<IMonstre>();
+	private List<IMonstre> friends = new ArrayList<IMonstre>();
+	private List<IMonstre> nextMonstres = new ArrayList<IMonstre>();
+	private List<IMonstre> nextFriends = new ArrayList<IMonstre>();
+
+	private IScreen screen;
+
+	private IArea3D terrain;
+
+	private Audio modStream;
+
+	private Audio killSound;
+
+	private Audio canonKillSound;
+	private Audio canonFireSound;
+
+
+	private Satellite satellite;
+
+
+
+	public Level2(IScreen screen) {
+		this.screen = screen;
+	    
+	    try {
+			modStream = AudioLoader.getStreamingAudio("MOD", ResourceLoader.getResource("testdata/sample.xm"));
+			killSound = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("testdata/SmallExplosion8-Bit.ogg"));
+			canonKillSound = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("testdata/EnemyDeath.ogg"));
+			canonFireSound = AudioLoader.getAudio("OGG", ResourceLoader.getResourceAsStream("testdata/Collision8-Bit.ogg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    
+
+	    
+	}
+
+	@Override
+	public void generateMonstres() {
+		// hide mouse :)
+		Mouse.setGrabbed(true);
+		generateMonstres(Satellite.PHASES.PHASE_0.ordinal());
+	}
+
+	MissileFactory3D missileFactory;
+	
+	private MissileLauncher3D missileLauncher3D;
+	@Override
+	public synchronized void generateMonstres(int phase) {
+		
+		// g�n�rateur de monstre par vagues
+		if (phase == Satellite.PHASES.PHASE_0.ordinal()) {
+			
+			
+			
+			// purge
+			
+			for (IMonstre monstre : monstres) {
+				monstre.dispose();
+			}
+			for (IMonstre friend : friends) {
+				friend.dispose();
+			}
+
+			
+			
+			for (int x = 3; x <= 17; x++) {
+				for (int y = 0; y < 3; y++) {
+					Maison3D maison = new Maison3D(this,new Point3D.Integer(x,y,3));
+					friends.add(maison);
+					maison = new Maison3D(this,new Point3D.Integer(x,y,17));
+					friends.add(maison);
+				}
+			}
+			for (int z = 4; z <= 17-1; z++) {
+				for (int y = 0; y < 3; y++) {
+					Maison3D maison = new Maison3D(this,new Point3D.Integer(3,y,z));
+					friends.add(maison);
+					maison = new Maison3D(this,new Point3D.Integer(17,y,z));
+					friends.add(maison);
+				}
+			}
+			
+			missileFactory = new MissileFactory3D(this);
+			
+			missileLauncher3D = new MissileLauncher3D(this, missileFactory, 10, 2, 10);
+			friends.add(missileLauncher3D);
+			
+			
+			satellite = new Satellite(this, missileFactory);
+
+			for (int v = 0; v < 10; v++) {
+				int victim = (int) Math.floor(Math.random()*(friends.size()-1));
+				
+				if (friends.get(victim) instanceof IMove) {
+					// monstre qui bouge
+					satellite.buildMissile(terrain.getCase(new Point3D.Integer((int) Math.floor(Math.random()*(terrain.getTerrainSize().x-1)), terrain.getTerrainSize().y-1 ,0)),(IMove)friends.get(victim));
+				} else if (friends.get(victim) instanceof IPosition3D) {
+					// monstre qui ne bouge pas
+					satellite.buildMissile(terrain.getCase(new Point3D.Integer((int) Math.floor(Math.random()*(terrain.getTerrainSize().x-1)), terrain.getTerrainSize().y-1,0)), (IPosition3D)friends.get(victim));
+				}
+				
+				
+				canonFireSound.playAsSoundEffect(1.0f, 0.1f, false);
+			}
+			
+			
+			monstres.add(satellite);
+			
+			
+		} else {
+			for (int v = 0; v < 10; v++) {
+				int victim = (int) Math.floor(Math.random()*(friends.size()-1));
+				
+				if (friends.get(victim) instanceof IMove) {
+					// monstre qui bouge
+					satellite.buildMissile(terrain.getCase(new Point3D.Integer((int) Math.floor(Math.random()*(terrain.getTerrainSize().x-1)), terrain.getTerrainSize().y-1,0)), (IMove)friends.get(victim));
+				} else if (friends.get(victim) instanceof IPosition3D) {
+					// monstre qui ne bouge pas
+					satellite.buildMissile(terrain.getCase(new Point3D.Integer((int) Math.floor(Math.random()*(terrain.getTerrainSize().x-1)), terrain.getTerrainSize().y-1,0)), (IPosition3D)friends.get(victim));
+				}
+				
+				
+				canonFireSound.playAsSoundEffect(1.0f, 0.1f, false);
+			}
+		}
+	}
+
+
+	@Override
+	public synchronized void step() {
+		if (satellite != null && !satellite.isDeath()) {
+			satellite.step(); // does call generateMonsters...
+		}
+		for (IMonstre monstre : monstres) {
+			// they are alive !
+			if (!(monstre instanceof Satellite)) {
+				monstre.step();
+			}
+		}
+		for (IMonstre friend : friends) {
+			// you are alive !
+			friend.step();
+		}
+		
+		junkLists();
+		impactFriendsMonsters();
+		
+		while (killMonsters()) {
+		}
+		while (killFriends()) {
+		}
+		if (satellite != null && !satellite.isDeath()) {
+			while (satellite.killMissiles()) {
+			}
+		}
+	}
+	
+	private void impactFriendsMonsters() {
+		for (IMonstre friend : friends) {
+			for (IMonstre monstre : monstres) {
+				if (!monstre.isDeath()) {
+					
+					// and zone ???????? dam'n !
+					// @see Tools.touch()
+					// 3D, only 3D...
+					if (!friend.isDeath() && friend instanceof ICircle3D) {
+						if (monstre.touch((ICircle3D)friend)) {
+							monstre.kill(friend);
+							friend.kill(monstre);
+						}
+					}
+					if (!friend.isDeath() && friend instanceof IProjectile3D) {
+						if (monstre.touch((IProjectile3D)friend)) {
+							monstre.kill(friend);
+							friend.kill(monstre);
+						}
+					}
+					if (!monstre.isDeath() && monstre instanceof ICircle3D) {
+						if (friend.touch((ICircle3D)monstre)) {
+							friend.kill(monstre);
+							monstre.kill(friend);
+						}
+					}
+					if (!monstre.isDeath() && monstre instanceof IProjectile3D) {
+						if (friend.touch((IProjectile3D)monstre)) {
+							friend.kill(monstre);
+							monstre.kill(friend);
+						}
+					}
+					
+					
+				}
+			}
+		}
+	}
+
+	private boolean killMonsters() {
+		for (IMonstre monstre : monstres) {
+			if (monstre.isDeath()) {
+				monstres.remove(monstre);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean killFriends() {
+		for (IMonstre friend : friends) {
+			if (friend.isDeath()) {
+				friends.remove(friend);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public IScreen getScreen() {
+		return screen;
+	}
+
+	@Override
+	public IArea3D getArea() {
+		return terrain;
+	}
+
+
+	@Override
+	public void setArea(IArea3D terrain) {
+		this.terrain = terrain;
+		terrain.setColor(Color.BLACK);
+	}
+
+
+	@Override
+	public synchronized void addMonstre(IMonstre monstre) {
+		nextMonstres.add(monstre);
+	}
+
+
+	@Override
+	public synchronized void addFriend(IMonstre friend) {
+		nextFriends.add(friend);
+	}
+
+
+	@Override
+	public synchronized boolean key(int eventKey, boolean eventKeyState) {
+		boolean concerned = false;
+		for (IMonstre friend : friends) {
+			if (friend instanceof IController) {
+				boolean test = ((IController)friend).key(eventKey,eventKeyState);
+				if (test) {
+					concerned = true;
+				}
+			}
+		}
+		junkLists();
+		return concerned;
+	}
+
+
+	private void junkLists() {
+		monstres.addAll(nextMonstres);
+		nextMonstres.clear();
+		friends.addAll(nextFriends);
+		nextFriends.clear();
+	}
+
+
+	@Override
+	public synchronized void mouse(int eventButton, boolean eventButtonState, Point2D.Double position) {
+		for (IMonstre friend : friends) {
+			if (friend instanceof IController) {
+				((IController)friend).mouse(eventButton,eventButtonState,position);
+			}
+		}
+		junkLists();
+	}
+
+	
+
+	@Override
+	public synchronized boolean render(int calque) {
+		if (calque == 0) {
+			terrain.render(0);
+			return true;
+		}
+		if (calque>0 && calque-1 < friends.size()) {
+			((IRenderer) friends.get(calque-1)).render(0);
+			return true;
+		}
+		int n = calque-1-friends.size();
+		if (n<monstres.size()) {
+			if (monstres.get(n) instanceof IRenderer) {
+				((IRenderer) monstres.get(n)).render(0);
+			}
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
+	public synchronized Boolean finished() {
+		if (DEMO) { return null;}
+		if (!leaveDangerousMonsters(monstres) || !leaveDangerousMonsters(friends)) {
+			if (!leaveDangerousMonsters(friends)) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	private boolean leaveDangerousMonsters(List<IMonstre> monstres) {
+		for (IMonstre monstre : monstres) {
+			if (monstre instanceof IDangerous && !monstre.isDeath()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * 
+	 * @return serializable stuff
+	 */
+	public synchronized ArrayList<MissileDTO> getMissiles() {
+		ArrayList<MissileDTO> missiles = new ArrayList<MissileDTO>();
+		for (IMonstre monstre : monstres) {
+			if (monstre instanceof Missile) {
+				missiles.add(new MissileDTO((Missile)monstre));
+			}
+		}
+		for (IMonstre friend : friends) {
+			if (friend instanceof Missile) {
+				missiles.add(new MissileDTO((Missile)friend));
+			}
+		}
+		return missiles;
+	}
+	
+	@Override
+	public void setArea(IArea area) {
+		setArea((IArea3D)area);
+	}
+
+	@Override
+		public ICamera getCamera() {
+			if (missileLauncher3D!= null && !missileLauncher3D.isDeath()) {
+				ICamera camera = missileLauncher3D.getCamera();
+				if (camera!= null) return camera;
+			}
+			Point3D.Double position = new Point3D.Double(getArea().getZoneSize().x/2,getArea().getZoneSize().y/2,0);
+			Point3D.Double orientation = new Point3D.Double(getArea().getZoneSize().x/2,getArea().getZoneSize().y/2,10);
+			return new Camera(2.0/3.0,position, orientation);
+		}
+
+}

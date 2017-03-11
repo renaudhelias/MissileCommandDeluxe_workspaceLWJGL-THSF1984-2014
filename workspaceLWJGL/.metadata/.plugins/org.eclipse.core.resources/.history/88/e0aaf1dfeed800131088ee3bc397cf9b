@@ -1,0 +1,300 @@
+package net.stinfoservices.helias.renaud.tempest.agent.projectile;
+
+import java.io.Serializable;
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+
+import net.stinfoservices.helias.renaud.tempest.agent.Circle3DRenderer;
+import net.stinfoservices.helias.renaud.tempest.agent.ICircle2D;
+import net.stinfoservices.helias.renaud.tempest.agent.ICircle3D;
+import net.stinfoservices.helias.renaud.tempest.agent.IMarcheOuCreve;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.special.Marqueur3D;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel3D;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.Forteress;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Tools;
+
+// air/terre ou terre/air
+/**
+ * Le Missile est � la fois un ICircle, et � la fois un IProjectile.
+ * Il a donc deux �tats, non cumulable
+ * Cela dit il y a un marqueur. Qui disparait aussi
+ * @author freemac
+ *
+ */
+public class Missile3D extends Circle3DRenderer implements IMissile, IProjectile3D, Serializable {
+
+	/**
+	 * UID
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * What ???
+	 */
+	public static final double CALIBRAGE_FORCE = (800+600)/2;
+
+//	private boolean firedFromHuman;
+	
+	private boolean stateExplosing;
+
+	private transient double explosingRayon=1.0;
+
+	private transient boolean death;
+
+	private transient Point3D.Double devantOld;
+
+	private Point3D.Double devant;
+
+	private transient Point3D.Double derriere;
+
+	private transient double force;
+
+	private transient ILevel3D level;
+
+	private transient Marqueur3D marqueur;
+
+//	private transient String textureExplode;
+
+	private transient Point3D.Double origine;
+
+	public Missile3D(ILevel3D level, Point3D.Double origine, Point3D.Double devant, Point3D.Double derriere, double force, Marqueur3D marqueur) {
+		super(false);
+//		this.firedFromHuman=firedFromHuman;
+		this.marqueur = marqueur;
+		this.level = level;
+		
+		this.devant = devant;
+		this.devantOld = new Point3D.Double(devant.x, devant.y, devant.z);
+		this.derriere = derriere;
+		this.force=force;
+//		this.textureExplode=textureExplode;
+		
+		this.origine = origine;
+		if (force == 0) {
+			this.marqueur = null;
+			// ScoreLevel : you loose, "The End"
+			changeStateIntoExplosion();
+		}
+		prepare("missile2");
+//		prepare("route.obj");
+	}
+	
+	@Override
+	public Point3D.Double getDevant() {
+		return devant;
+	}
+
+	@Override
+	public Point3D.Double getDevantOld() {
+		return devantOld;
+	}
+
+	@Override
+	public Point3D.Double getDerriere() {
+		return derriere;
+	}
+
+//	@Override
+//	public boolean isHumanFire() {
+//		return firedFromHuman;
+//	}
+	@Override
+	public double getRayon() {
+		if (stateExplosing) {
+			return explosingRayon;
+		} else {
+			// largeur du missile
+			return 20;
+		}
+	}
+	@Override
+	public Point3D.Double getPosition() {
+		if (stateExplosing) {
+			return getDevant();
+		} else {
+			Point3D.Double devant = getDevant();
+			Point3D.Double derriere = getDerriere();
+			return new Point3D.Double((devant.x-derriere.x)/2.0+derriere.x, (devant.y-derriere.y)/2.0+derriere.y, (devant.z-derriere.z)/2.0+derriere.z);
+		}
+	}
+	@Override
+	public boolean isOriented() {
+		if (stateExplosing) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	@Override
+	public Point3D.Double getOrientation() {
+		return Tools.vector3D(getDevant(), getDerriere());
+	}
+	
+	@Override
+	public void step() {
+		if (!death) {
+			if (stateExplosing) {
+				if (explosingRayon>150.0) {
+					death = true;
+				} else {
+					explosingRayon+=1.0;
+				}
+			} else {
+				devantOld.x=devant.x;
+				devantOld.y=devant.y;
+				devantOld.z=devant.z;
+				
+				// suivant la force de la fl�che
+				Point3D.Double vecteur = new Point3D.Double(devant.x-derriere.x, devant.y-derriere.y, devant.z-derriere.z);
+				vecteur.x=vecteur.x * force/CALIBRAGE_FORCE;
+				vecteur.y=vecteur.y * force/CALIBRAGE_FORCE;
+				vecteur.z=vecteur.z * force/CALIBRAGE_FORCE;
+				devant.x=devant.x+vecteur.x;
+				devant.y=devant.y+vecteur.y;
+				devant.z=devant.z+vecteur.z;
+				derriere.x=derriere.x+vecteur.x;
+				derriere.y=derriere.y+vecteur.y;
+				derriere.z=derriere.z+vecteur.z;
+				
+				//isOutOfScreen
+				// suivant taille �cran donn� lors du main
+				if ((devant.x<0 || devant.x>level.getArea().getZoneSize().x)) {
+					death = true;
+				}
+				if ((devant.y<0 || devant.y>level.getArea().getZoneSize().y)) {
+					death = true;
+				}
+				if (Forteress.AXE_Z_NEGATIVE) {
+					if ((devant.z>0 || devant.z<-level.getArea().getZoneSize().z)) {
+						// Z is negative :/
+						death = true;
+					}
+				} else {
+					if ((devant.z<0 || devant.z>level.getArea().getZoneSize().z)) {
+						// Z is positive :p
+						death = true;
+					}
+				}
+				
+				// marqueur touch it
+				if (marqueur !=null && marqueur.touch((IProjectile3D)this)) {
+					changeStateIntoExplosion();
+					
+				}
+			}
+		}
+	}
+	
+	private void changeStateIntoExplosion() {
+		stateExplosing = true;
+		// change image
+		prepare("sphere");
+		level.addFriend(this);
+		level.addMonstre(this);
+	}
+
+	@Override
+	public boolean isDeath() {
+		return death;
+	}
+	@Override
+	public void kill(IMarcheOuCreve killer) {
+		// not killable this way
+		if (!stateExplosing) {
+			if (killer instanceof IMissile) {
+				changeStateIntoExplosion();
+			} else {
+				death = true;
+			}
+		}
+	}
+	
+	@Override
+	public boolean render(int calque) {
+		if (stateExplosing) {
+			// éclair en jaune
+			GL11.glPushMatrix();
+			FloatBuffer mediumJauneLight = BufferUtils.createFloatBuffer(4);
+			mediumJauneLight.put(new float []{1.0f,1.0f,0.1f,1.0f});
+			mediumJauneLight.flip();
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_SPECULAR, mediumJauneLight);
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_DIFFUSE, mediumJauneLight);
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_EMISSION, mediumJauneLight);
+			super.render(calque);
+			GL11.glPopMatrix();
+		} else {
+			
+			// vert radio actif
+			GL11.glPushMatrix();
+			FloatBuffer mediumGreenLight = BufferUtils.createFloatBuffer(4);
+			mediumGreenLight.put(new float []{0.1f,1.0f,0.1f,1.0f});
+			mediumGreenLight.flip();
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_SPECULAR, mediumGreenLight);
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_DIFFUSE, mediumGreenLight);
+			GL11.glMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_EMISSION, mediumGreenLight);
+			renderLine();
+			super.render(calque);
+			GL11.glPopMatrix();
+			
+			
+			
+			if (marqueur != null) marqueur.render(calque);
+		}
+		return true;
+	}
+	
+	public void renderLine() {
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
+		GL11.glLineWidth(5);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex3d(getOrigine().x, getOrigine().y,getOrigine().z);
+		GL11.glVertex3d(getDerriere().x, getDerriere().y,getDerriere().z);
+		GL11.glEnd();
+	}
+
+	private Point3D.Double getOrigine() {
+		return origine;
+	}
+
+	@Override
+	public boolean touch(IProjectile3D arrow) {
+		if (stateExplosing)
+		return Tools.touchArrow3DCircle3D(arrow, this);
+		else return false;
+	}
+
+	@Override
+	public boolean touch(ICircle3D canon) {
+		if (canon instanceof IMissile && !stateExplosing) {
+			return false;
+		}
+		return Tools.touchCircle3DCircle3D(canon, this);
+	}
+
+	@Override
+	public void dispose() {
+		death = true;
+	}
+
+	@Override
+	public boolean touch(IProjectile2D arrow) {
+		if (stateExplosing)
+		return Tools.touchArrowCircle3D(arrow, this);
+		else return false;
+	}
+
+	@Override
+	public boolean touch(ICircle2D canon) {
+		if (canon instanceof IMissile && !stateExplosing) {
+			return false;
+		}
+		return Tools.touchCircleCircle3D(canon, this);
+	}
+
+	
+
+
+}

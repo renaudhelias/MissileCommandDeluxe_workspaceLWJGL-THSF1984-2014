@@ -1,0 +1,157 @@
+package net.stinfoservices.helias.renaud.tempest.tools.factory;
+
+import static org.junit.Assert.assertNotNull;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.stinfoservices.helias.renaud.tempest.TempestMain;
+
+public class Image3DFactory {
+
+	
+	private static enum Illum {
+		Color_on_and_Ambient_off,//0
+		Color_on_and_Ambient_on,//1
+		Highlight_on,//2
+		Reflection_on_and_Ray_trace_on,//3
+		Transparency_Glass_on_Reflection_Ray_trace_on,//4
+		Reflection_Fresnel_on_and_Ray_trace_on,//5
+		Transparency_Refraction_on_Reflection_Fresnel_off_and_Ray_trace_on,//6
+		Transparency_Refraction_on_Reflection_Fresnel_on_and_Ray_trace_on,//7
+		Reflection_on_and_Ray_trace_off, //8
+		Transparency_Glass_on_Reflection_Ray_trace_off, //9
+		Casts_shadows_onto_invisible_surfaces //10 
+	}
+	
+	private static Image3DFactory image3DFactory = null;
+	
+	private Map<String,IImage3D> bibliotheque = new HashMap<String,IImage3D>();
+	
+	public static Image3DFactory getInstance() {
+		if (image3DFactory==null) {
+			image3DFactory = new Image3DFactory();
+		}
+		return image3DFactory;
+	}
+	
+	/**
+	 * 
+	 * @param fileName without extension
+	 * @return
+	 * @throws URISyntaxException
+	 * @throws IOException
+	 */
+	public IImage3D create(String fileName) throws URISyntaxException, IOException {
+		if (bibliotheque.containsKey(fileName)) {
+			return bibliotheque.get(fileName);
+		}
+		Image3D img = new Image3D();
+		URL ressource = TempestMain.class.getResource(fileName+".obj");
+		assertNotNull(ressource);
+		if (ressource!= null) {
+			File f = new File(ressource.toURI());
+			FileReader fr = new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line=null;
+			// usemtl gris
+			String m="^usemtl( .*)$";
+			String o="^o( .*)$";
+			String p="^([vf]) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?)$";
+			Pattern patternM = Pattern.compile(m);
+			Pattern patternP = Pattern.compile(p);
+			Pattern patternO = Pattern.compile(o);
+			while ((line=br.readLine())!=null) {
+				Matcher matcherP = patternP.matcher(line);
+				if (matcherP.matches()) {
+					if (matcherP.group(1).equals("v")) {
+						//System.out.println("Vertex("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+						img.addVertex(Double.valueOf(matcherP.group(2)),Double.valueOf(matcherP.group(3)),Double.valueOf(matcherP.group(4)));
+					} else {
+						//System.out.println("triangle("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+						img.addTriangle(Integer.valueOf(matcherP.group(2)),Integer.valueOf(matcherP.group(3)),Integer.valueOf(matcherP.group(4)));
+					}
+				}
+				Matcher matcherO = patternO.matcher(line);
+				if (matcherO.matches()) {
+					System.out.println("========Objet"+matcherO.group(1)+"==");
+					img.welcomeObjet(matcherO.group(1));
+				}
+				Matcher matcherM = patternM.matcher(line);
+				if (matcherM.matches()) {
+					System.out.println("========usemtl"+matcherM.group(1)+"==");
+					img.welcomeUseMTL(matcherM.group(1));
+				}
+			}
+			img.normalize();
+			br.close();
+			fr.close();
+		}		
+		
+		// mtllib gastonLagaffe_000001.mtl (dans obj, rare)
+		URL ressource2 = TempestMain.class.getResource(fileName+".mtl");
+		if (ressource2 != null) {
+			File f = new File(ressource2.toURI());
+			FileReader fr = new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line=null;
+//			Ns 80.392157
+			// specular (exponent, between 0 to 1000) - focus of the specular highlight
+//			newmtl cuir
+			String m="^newmtl( .*)$";
+//			Ka 0.073321 0.064923 0.047660
+			// Ka : ambiant reflectivity
+//			Kd 0.140953 0.114528 0.018528
+			// Kd : diffuse
+//			Ks 0.543255 0.543255 0.543255
+			// Ks : specular reflectivity
+			// Tf : transmission filter (passing throw)
+//			Ni 1.000000
+			// Ni : optical density(from 0.001 to 10), glass= 1.5 
+//			d 1.000000
+			// disolve (1=opaque, 0=transparent)
+//			illum 2
+			// The "illum" statement specifies the illumination model to use in the material.
+			String k="^(K[ads]) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?)$";
+			Pattern patternK = Pattern.compile(k);
+			Pattern patternM = Pattern.compile(m);
+			while ((line=br.readLine())!=null) {
+				Matcher matcherK = patternK.matcher(line);
+				if (matcherK.matches()) {
+					if (matcherK.group(1).equals("Ka")) {
+						//System.out.println("Vertex("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+						img.addKa(Double.valueOf(matcherK.group(2)),Double.valueOf(matcherK.group(3)),Double.valueOf(matcherK.group(4)));
+					} else if (matcherK.group(1).equals("Kd")) {
+							//System.out.println("Vertex("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+							img.addKd(Double.valueOf(matcherK.group(2)),Double.valueOf(matcherK.group(3)),Double.valueOf(matcherK.group(4)));
+					} else {
+						//System.out.println("triangle("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+						img.addKs(Double.valueOf(matcherK.group(2)),Double.valueOf(matcherK.group(3)),Double.valueOf(matcherK.group(4)));
+					}
+				}
+				Matcher matcherM = patternM.matcher(line);
+				if (matcherM.matches()) {
+					System.out.println("========newmtl"+matcherM.group(1)+"==");
+					img.welcomeNewMTL(matcherM.group(1));
+				}
+			}
+			img.normalize();
+			br.close();
+			fr.close();
+		}
+		
+		bibliotheque.put(fileName,img);
+		return img;
+	}
+	
+
+
+}

@@ -1,0 +1,26 @@
+package net.stinfoservices.helias.renaud.tempest.tools.factory;
+
+import java.awt.Font;
+import java.io.InputStream;
+
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.util.ResourceLoader;
+
+public class FontLoader {
+
+	private static FontLoader instance;
+	public static FontLoader getInstance() {
+		if (instance==null) {
+			instance = new FontLoader();
+		}
+		return instance;
+	}
+	public TrueTypeFont loadFont1() {
+		InputStream inputStream	= ResourceLoader.getResourceAsStream("IMPACT.TTF");
+		 
+		Font awtFont2 = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+		awtFont2 = awtFont2.deriveFont(24f); // set font size
+		font2 = new TrueTypeFont(awtFont2, antiAlias);
+	}
+
+}

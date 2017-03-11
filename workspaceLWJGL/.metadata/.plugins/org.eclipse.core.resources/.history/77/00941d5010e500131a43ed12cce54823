@@ -1,0 +1,168 @@
+package net.stinfoservices.helias.renaud.tempest.agent;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.lwjgl.opengl.GL11;
+
+import net.stinfoservices.helias.renaud.tempest.IPosition3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Rotate3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Tools;
+import net.stinfoservices.helias.renaud.tempest.tools.factory.IImage3D;
+import net.stinfoservices.helias.renaud.tempest.tools.factory.Image3DFactory;
+
+/**
+ * C'est un cube avec un rayon.
+ * @author freemac
+ *
+ */
+public abstract class Circle3DRenderer implements ICircle3D, IPosition3D, IMove, IRenderer3D {
+
+	private IImage3D missile;
+	private Color c;
+	private boolean rotXandThenY = true;
+
+	public Circle3DRenderer(boolean rotXandThenY) {
+		this.rotXandThenY = rotXandThenY;
+	}
+	
+	@Override
+	public void prepare(String fileName) {
+		try {
+			missile = Image3DFactory.getInstance().create(fileName);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setColor(Color c) {
+		this.c =c;
+	}
+	
+	@Override
+	public boolean render(int calque) {
+		
+		GL11.glPushMatrix();
+//		if (c!=null) {
+//			GL11.glColor3d(c.getRed()/256.0, c.getGreen()/256.0, c.getBlue()/256.0);
+//		}
+		double progression = getProgression();
+		if (progression>= 1.0 || progression <0.0) {
+			throw new Error("Mauvaise progression ("+progression+") sur " + this.getClass().getName());
+		}
+		
+
+		Point3D.Double middle = getPosition();
+		
+		GL11.glTranslated(middle.x,middle.y,middle.z);
+
+		// -1 +1
+		GL11.glScaled(getRayon()*2,getRayon()*2,getRayon()*2);
+		
+		
+		if (isOriented()) {
+			if (!rotXandThenY) {
+				// regarde au dessus... (bien pour les projectiles)
+				Point3D.Double o = getOrientation();
+				if (o != null) {
+					
+					Point3D.Double o2 = new Point3D.Double(0,-1,0);
+					
+					double angle = Tools.angleVectorVector(o,o2);
+					if (!Double.isNaN(angle)) {
+
+						angle=-angle;
+						double rX=o.x*o2.y-o.y*o2.x;
+						double rY=o.y*o2.z-o.z*o2.y;
+						double rZ=o.z*o2.x-o.x*o2.z;
+						
+						GL11.glRotated((360.0*angle)/(Math.PI*2), rY, rZ, rX);
+					}
+					
+				}
+			} else {
+				// regarde devant... (bien pour les maisons, et le bonhomme)
+				Point3D.Double o = getOrientation();
+				if (o != null) {
+					
+					// plateau
+					Point3D.Double oy = Tools.normalize(new Point3D.Double(o.x,0,o.z));
+					// au départ je suis en 0,0,1 donc je prend cet axe
+					Point3D.Double o2y = new Point3D.Double(0,0,1);
+					Point3D.Double o2ySign = new Point3D.Double(1,0,0);
+
+					double angleY = Tools.angleVectorVector(oy,o2y);
+					double signY = Tools.angleVectorVector(oy, o2ySign);
+					double sensY = 1.0;
+					if (!Double.isNaN(angleY)) {
+						if (signY<Math.PI/2 && angleY < Math.PI/2) {
+//							sens = -1.0;
+//							GL11.glColor3d(1, 0, 0);
+						}
+						if (signY>Math.PI/2 && angleY < Math.PI/2) {
+							sensY = -1.0;
+//							GL11.glColor3d(0, 1, 0);
+						}
+						if (signY<Math.PI/2 && angleY > Math.PI/2) {
+//							sens = -1.0;
+//							GL11.glColor3d(0, 0, 1);
+						}
+						if (signY>Math.PI/2 && angleY > Math.PI/2) {
+							sensY = -1.0;
+//							GL11.glColor3d(1, 1, 0);
+						}
+						GL11.glRotated((360.0*angleY)/(Math.PI*2), 0, sensY, 0);
+						// je contre ma rotation sur la figure d'origine
+						o = new Rotate3D(new Point3D.Double(0.0,-sensY,0.0),angleY).projeter(o);
+					} else {
+						System.out.println("NaN A");
+					}
+					// canon
+					Point3D.Double ox = Tools.normalize(new Point3D.Double(0,o.y,o.z));
+					// au départ je suis en 0,0,1 donc je prend cet axe
+					Point3D.Double o2x = new Point3D.Double(0,0,1);
+					Point3D.Double o2xSign = new Point3D.Double(0,1,0);
+					
+					double angleX = Tools.angleVectorVector(ox,o2x);
+					double signX = Tools.angleVectorVector(ox, o2xSign);
+					// si plus de 180°, alors le plateau est de l'autre sens...
+					if (!Double.isNaN(angleX)) {
+						double sensX = 1;
+						if (signX<Math.PI/2) {
+							sensX = -1.0;
+//							GL11.glColor3d(1, 0, 0);
+						}
+						if (signX>Math.PI/2) {
+//							sensX = -1.0;
+//							GL11.glColor3d(0, 1, 0);
+						}
+						
+						GL11.glRotated((360.0*angleX)/(Math.PI*2), sensX, 0, 0);
+					} else {
+						System.out.println("NaN B");
+					}
+					
+				}
+			}
+		}
+		missile.render(calque);
+
+
+		GL11.glPopMatrix();
+
+		return true;
+	}
+
+	/**
+	 * Par défaut on est fixe.
+	 */
+	@Override
+	public double getProgression() {
+		return 0;
+	}
+
+}

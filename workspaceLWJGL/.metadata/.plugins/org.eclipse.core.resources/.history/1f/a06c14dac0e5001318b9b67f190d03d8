@@ -1,0 +1,621 @@
+package net.stinfoservices.helias.renaud.tempest;
+
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import net.stinfoservices.helias.renaud.tempest.level.CalibrateLevel;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel2D;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel3D;
+import net.stinfoservices.helias.renaud.tempest.level.IScore;
+import net.stinfoservices.helias.renaud.tempest.level.Level2;
+import net.stinfoservices.helias.renaud.tempest.level.ScoreLevel;
+import net.stinfoservices.helias.renaud.tempest.level.StartLevel;
+import net.stinfoservices.helias.renaud.tempest.level.terrain.Puits;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Tools;
+import net.stinfoservices.helias.renaud.tempest.tools.factory.FontLoader;
+import net.stinfoservices.helias.renaud.tempest.tools.manager.PrimitiveMouseManager;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.openal.AL;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Timer;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.openal.SoundStore;
+
+/**
+ * http://lwjgl.org/wiki/index.php?title=Main_Page Basics
+ * 
+ * 
+ * http://www.blender-models.com models
+ * 
+ * squelette :
+ * http://www.blender-models.com/model-downloads/humans/id/gaston-lagaffe/
+ * 
+ * obj : lors de l'export, cocher "animation"
+ * 
+ * @author STI
+ * 
+ */
+public class TempestMain implements IScreen {
+	
+	public static final int SCREEN_WIDTH = 1024;
+	public static final int SCREEN_HEIGHT = 768;
+	private static final int SCREEN_DEPTH = 500*2*2; // rotate du terrain de 500x500 + skybox qui est dÈj‡ en *2
+	
+	JLabel message = new JLabel("Tempest demo");
+	
+	private ILevel level;
+	int levelNumber = -1;
+	
+	ILevel [] levels;
+	
+	TrueTypeFont font = null;
+	private int fontWidth;
+	private int fontHeight; 
+	
+	public TempestMain() {
+	}
+	public void start() {
+		try {
+//			Display.setVSyncEnabled(true);
+			listDisplayModes();
+			fenetre(false);
+			Display.create();
+			Display.setVSyncEnabled(true);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+//		font = FontLoader.getInstance().loadFont1();
+		
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		
+//		GL11.glDepthFunc(GL11.GL_LEQUAL);
+//		GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);
+		// init OpenGL here
+		GL11.glLoadIdentity();
+		// le Z est NEGATIF mais √ßa n'emp√®che qu'ici les param√®tres sont rentr√©s dans l'autre sens comme si POSITIF... ce sont des tailles en fait
+//		GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/4, SCREEN_HEIGHT, -80, SCREEN_DEPTH);
+//		GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/4, SCREEN_HEIGHT, -80, SCREEN_DEPTH);
+		
+		
+//		OpenGL provides 2 functions for GL_PROJECTION transformation. glFrustum() is to produce a perspective projection, and glOrtho() is to produce a orthographic (parallel) projection. Both functions require 6 parameters to specify 6 clipping planes; left, right, bottom, top, near and far planes. 8 vertices of the viewing frustum are shown in the following image.
+		GL11.glFrustum(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, (Puits.ZONE_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP, SCREEN_DEPTH);
+//		GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -(Puits.ZONE_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP, SCREEN_DEPTH);
+//		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glEnable(GL11.GL_SCISSOR_TEST);
+		
+//		GL11.glEnable(GL11.GL_DEPTH_TEST);
+//		GL11.glEnable (GL11.GL_BLEND);
+//		GL11.glBlendFunc (GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		//
+//		lumiere(); la lumiere est sur la camera
+//		new StartLevel(this), new Level0(this), 
+		levels = new ILevel[] {new CalibrateLevel(this), new StartLevel(this), new Level2(this),  new ScoreLevel(this)};
+		
+		// init serveur
+//		serveur = new Serveur();
+		
+		// init ennemis
+		initGame(false);
+		
+		while (!Display.isCloseRequested()) {
+			// inputs 
+			pollInputs();
+			
+//			if (level instanceof Level0) {
+//				serveur.poll((Level0)level);
+//			} else {
+//				serveur.poll(null);
+//			}
+			
+			// tick
+			Timer.tick();
+			
+			// terrain et bulles
+			terrainUpdate();
+
+			// matrix
+			matrixUpdate();
+
+			Display.sync(60);
+
+			// render OpenGL here
+			Display.update();
+			
+			checkScore();
+		}
+
+		Display.destroy();
+		AL.destroy(); // sound system
+//		serveur.stop();
+//		try {
+//			serveur.wait();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+		Mouse.setGrabbed(false);
+		System.exit(0);
+	}
+
+	public static void lumiere() {
+		// what ?
+//		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glShadeModel(GL11.GL_FLAT);
+		
+		// lumi√®re globale
+		FloatBuffer globalAmbiantLight = BufferUtils.createFloatBuffer(4);
+		globalAmbiantLight.put(new float []{0.8f,0.8f,0.8f,1.0f});
+		globalAmbiantLight.flip();
+		// lumi√®re "global" qui rebondie pas normalement (murs)
+		FloatBuffer ambiantLight = BufferUtils.createFloatBuffer(4);
+		ambiantLight.put(new float []{0.8f,0.8f,0.8f,1.0f});
+		ambiantLight.flip();
+		// la vrai lumi√®re qui √©clair et rebondie logiquement (objets)
+		FloatBuffer diffuseLight = BufferUtils.createFloatBuffer(4);
+		diffuseLight.put(new float []{1.0f,1.0f,1.0f,1.0f});
+		diffuseLight.flip();
+		// ce qui nique les yeux (genre on voit des rayons)
+		FloatBuffer specularLight = BufferUtils.createFloatBuffer(4);
+		specularLight.put(new float []{1.0f,1.0f,1.0f,1.0f});
+		specularLight.flip();
+		
+		
+		// by default LIGHT0 is on, so I change it
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, ambiantLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, ambiantLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, ambiantLight);
+		GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, globalAmbiantLight);
+//buggy lol		(seems inverted in GL_PROJECTION MODE)
+//		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
+		GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_FALSE);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_LIGHT0);
+		GL11.glEnable(GL11.GL_DEPTH_TEST); // d√©j√† fait mais bon
+		
+	}
+	
+	public static void directionLumiere(Point3D.Double origine, Point3D.Double direction, double angle) {
+		
+		FloatBuffer positionLight = BufferUtils.createFloatBuffer(4);
+		positionLight.put(new float []{(float)origine.x,(float)origine.y,(float)origine.z,0.0f});
+		positionLight.flip();
+		FloatBuffer directionLight = BufferUtils.createFloatBuffer(4);
+		directionLight.put(new float []{(float)direction.x,(float)direction.y,(float)direction.z,0});
+		directionLight.flip();
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION,positionLight);
+		GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPOT_DIRECTION,directionLight);
+		GL11.glLightf(GL11.GL_LIGHT0, GL11.GL_SPOT_CUTOFF, (float)angle);
+
+	}
+	
+	private void listDisplayModes() throws LWJGLException {
+		DisplayMode[] modes = Display.getAvailableDisplayModes();
+
+		for (int i=0;i<modes.length;i++) {
+		    DisplayMode current = modes[i];
+		    System.out.println(current.getWidth() + "x" + current.getHeight() + "x" +
+		                        current.getBitsPerPixel() + " " + current.getFrequency() + "Hz");
+		}
+
+	}
+	private void fenetre(boolean fenetre) throws LWJGLException {
+		if (fenetre) {
+			Display.setDisplayMode(new DisplayMode(SCREEN_WIDTH, SCREEN_HEIGHT));
+			JFrame jFrame = new JFrame("Tempest game");
+			// manque Display.destroy
+			jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			jFrame.setLayout(new BorderLayout());
+			Canvas parent = new Canvas();
+			jFrame.add(parent, BorderLayout.CENTER);
+			jFrame.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+			jFrame.setVisible(true);
+			jFrame.add(message, BorderLayout.SOUTH);
+			Display.setParent(parent);
+		} else {
+			// 1280x800x24 55Hz
+//			1280x800x24 56Hz
+//			1280x960x24 54Hz
+//			1152x864x24 57Hz
+//			640x480x24 62Hz
+//			1280x1024x24 60Hz
+//			640x480x24 63Hz
+//			1280x1024x24 61Hz
+//			1280x1024x24 50Hz
+//			1280x1024x24 51Hz
+//			1280x1024x24 52Hz
+//			1280x1024x24 53Hz
+//			1024x768x24 58Hz
+//			1280x720x24 64Hz
+//			1024x768x24 59Hz
+			// bug parfois
+//			setDisplayMode(800,600,true);
+			setDisplayMode(SCREEN_WIDTH,SCREEN_HEIGHT,true);
+		}
+
+	}
+	
+	/**
+	 * Set the display mode to be used 
+	 * 
+	 * @param width The width of the display required
+	 * @param height The height of the display required
+	 * @param fullscreen True if we want fullscreen mode
+	 */
+	private void setDisplayMode(int width, int height, boolean fullscreen) {
+
+	    // return if requested DisplayMode is already set
+	    if ((Display.getDisplayMode().getWidth() == width) && 
+	        (Display.getDisplayMode().getHeight() == height) && 
+		(Display.isFullscreen() == fullscreen)) {
+		    return;
+	    }
+
+	    try {
+	        DisplayMode targetDisplayMode = null;
+			
+		if (fullscreen) {
+		    DisplayMode[] modes = Display.getAvailableDisplayModes();
+		    int freq = 0;
+					
+		    for (int i=0;i<modes.length;i++) {
+		        DisplayMode current = modes[i];
+						
+			if ((current.getWidth() == width) && (current.getHeight() == height)) {
+			    if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
+			        if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
+				    targetDisplayMode = current;
+				    freq = targetDisplayMode.getFrequency();
+	                        }
+	                    }
+
+			    // if we've found a match for bpp and frequence against the 
+			    // original display mode then it's probably best to go for this one
+			    // since it's most likely compatible with the monitor
+			    if ((current.getBitsPerPixel() == Display.getDesktopDisplayMode().getBitsPerPixel()) &&
+	                        (current.getFrequency() == Display.getDesktopDisplayMode().getFrequency())) {
+	                            targetDisplayMode = current;
+	                            break;
+	                    }
+	                }
+	            }
+	        } else {
+	            targetDisplayMode = new DisplayMode(width,height);
+	        }
+
+	        if (targetDisplayMode == null) {
+	            System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
+	            return;
+	        }
+
+	        Display.setDisplayMode(targetDisplayMode);
+	        Display.setFullscreen(fullscreen);
+				
+	    } catch (LWJGLException e) {
+	        System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
+	    }
+	}
+
+	
+	private void initGame(boolean winner) {
+		// level up
+		PrimitiveMouseManager.getInstance().resetListeners();
+		int score = -1;
+		if (levelNumber>0) {
+			// score out
+			score = levels[levelNumber].getScore();
+		}
+		levelNumber++;
+		if (levelNumber>=levels.length) {
+//			System.exit(0);
+			// want to recalibrate ? fuck you ! reboot !
+			levelNumber = 1;
+		}
+		level = levels[levelNumber];
+		if (score >-1) {
+			// score in
+			level.setScore(score);
+		}
+		level.init();
+		if (level instanceof IScore) {
+			((IScore)level).initScore(100, winner);
+		}
+		if (level instanceof ILevel3D) {
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+//			level.setArea(new Puits());//Forteress());
+		} else {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+//			level.setArea(new Killapede());
+		}
+		
+		Tools.nbSteps(true);
+		try {
+			level.generateMonstres();
+		} catch (Exception e) {
+			e.printStackTrace();
+			// next
+			System.exit(0);
+			initGame(winner);
+		}
+		// purge
+		level.step();
+		// ce hack ne marche pas de toute faÁon.
+		font = null;
+	}
+
+	private void checkScore() {
+		Boolean finished = level.finished();
+		if (finished != null) {
+			if (finished) {
+				message.setText("Score : you win !");
+			} else {
+				message.setText("Score : you loss !");
+			}
+			initGame(finished);
+		}
+	}
+
+	
+
+	private void terrainUpdate() {
+		int nbSteps = Tools.nbSteps(false);
+		for (int i =0;i< nbSteps; i++) {
+			// step
+			level.step();
+		}
+		SoundStore.get().poll(0);
+	}
+
+	private void matrixUpdate() {
+		
+		
+		
+		
+		
+		
+		
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		// c'est le level qui devrait fournir la camera.
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+        GL11.glScissor(0,0,getScreenWidth(), getScreenHeight());
+        GL11.glViewport(0,0,getScreenWidth(), getScreenHeight());
+//		GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/4, SCREEN_HEIGHT, -80, SCREEN_DEPTH);
+//		GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -(Puits.ZONE_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP, SCREEN_DEPTH);
+//		GL11.glFrustum(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, (SCREEN_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP,(SCREEN_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP+ SCREEN_DEPTH*2);
+//		GL11.glFrustum(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, (SCREEN_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP,(SCREEN_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP+ SCREEN_DEPTH*2);
+double distanceCanonEcran=(SCREEN_WIDTH*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP;
+double ratio = 2;
+double near = distanceCanonEcran*ratio;
+double translate = distanceCanonEcran*(ratio+1);
+double scale = ratio+1;
+        GL11.glFrustum(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, near,near+ SCREEN_DEPTH*ratio*4);
+
+        DoubleBuffer worldClip = BufferUtils.createDoubleBuffer(4);
+//OK        worldClip.put(1).put(0).put(0).put(0).flip();
+//OK        worldClip.put(1).put(0).put(0).put(SCREEN_WIDTH/(4)).flip();
+//OK        worldClip.put(-1).put(0).put(0).put(SCREEN_WIDTH/(4)).flip();
+//OK        worldClip.put(0).put(1).put(0).put(-SCREEN_HEIGHT/ratio).flip();
+        worldClip.put(0).put(0).put(-1).put(translate/scale).flip();
+        
+        GL11.glScaled(scale, scale, scale);
+		
+		
+		
+		GL11.glTranslated(0, -SCREEN_HEIGHT/ratio, -translate);
+//		if (!(level instanceof ScoreLevel)) { // secousses bug graphique...
+		GL11.glClearColor(0.0F,0.0F,0.0F,1.0F);
+		GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+//		}
+		GL11.glPushMatrix();
+		if (level instanceof ILevel3D) {
+			// terrain SkyBox
+			level.getCamera().render(0);
+			((ILevel3D)level).getArea().render(0);
+		}
+		GL11.glPopMatrix();
+        GL11.glEnable(GL11.GL_CLIP_PLANE0);
+        GL11.glClipPlane(GL11.GL_CLIP_PLANE0, worldClip);
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
+		GL11.glPushMatrix();
+		level.getCamera().render(0);
+		if (level instanceof ILevel2D) {
+			// avec tout GL_BLEND pour transparence images 2D
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_LIGHT0);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+		}
+
+		int calque = 0;
+		boolean fini = false;
+		while (!fini) {
+			// draw things.
+			fini = !level.render(calque);
+			calque++;
+		}
+		
+		
+		
+		GL11.glPopMatrix();
+
+		GL11.glDisable(GL11.GL_CLIP_PLANE0);
+		// bug tout le rest en mode projection
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+
+		
+		if (level instanceof ILevel3D) {
+			GL11.glPushMatrix();
+			// RADAR : en haut ÔøΩ gauche
+	        GL11.glScissor(0,(getScreenHeight()*3)/4,getScreenWidth()/4, getScreenHeight()/4);
+	        GL11.glViewport(0,(getScreenHeight()*3)/4,getScreenWidth()/4, getScreenHeight()/4);
+	        GL11.glLoadIdentity();
+//	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -SCREEN_DEPTH, SCREEN_DEPTH);
+	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -SCREEN_DEPTH, SCREEN_DEPTH);
+			GL11.glClearColor(0.5F,0.0F,0.0F,1.0F);
+			GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+	        GL11.glScissor(5,5+(getScreenHeight()*3)/4,getScreenWidth()/4-10, getScreenHeight()/4-10);
+	        GL11.glViewport(5,5+(getScreenHeight()*3)/4,getScreenWidth()/4-10, getScreenHeight()/4-10);
+	        GL11.glLoadIdentity();
+//	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -SCREEN_DEPTH, SCREEN_DEPTH);
+	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -SCREEN_DEPTH, SCREEN_DEPTH);
+			GL11.glClearColor(0.0F,0.0F,0.0F,1.0F);
+			GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+			
+			// vue de dessus
+			GL11.glScalef(0.5f, 0.5f, 0.5f);
+			GL11.glRotatef(180, 0,1, 0);
+			GL11.glRotatef(180, 1,0, 0);
+			GL11.glRotatef(180, 0,-1, -1);
+			double sw=level.getScreen().getScreenWidth();
+			double sh=level.getScreen().getScreenHeight();
+			double zh=((ILevel3D)level).getArea().getZoneSize().y;
+			double zoom = sh/zh;////Math.sqrt(sw*sw+sh*sh)/Math.sqrt(zw*zw+zh*zh);
+			
+			// dÈpend de : orientation, rayon.
+			// rayon => DISTANCE_PORTE
+			// zw    => LARGEUR_VP
+			
+			double zw= (1/zoom)*sw;
+//			
+			GL11.glTranslated(0,SCREEN_DEPTH,0);
+			// la camera est dÈcalÈe
+			GL11.glTranslated(0,0,-zoom*(zw*CalibrateLevel.DISTANCE_PORTE)/CalibrateLevel.LARGEUR_VP);
+			level.getCamera().render(0);
+			calque = 0;
+			fini = false;
+			while (!fini) {
+				// draw things.
+				fini = !level.render(calque);
+				calque++;
+			}
+			GL11.glPopMatrix();
+			
+			
+			double munitionsRatio = (double)level.getMunitionsRestantes()/(double)level.getMaxMunitions();
+//			GL11.glPushMatrix();
+			// en haut ÔøΩ droite
+	        GL11.glScissor((getScreenWidth()*3)/4,(getScreenHeight()*7)/8,(int)(munitionsRatio*((getScreenWidth()*1.0)/4.0)), (getScreenHeight()*1)/8);
+	        GL11.glViewport((getScreenWidth()*3)/4,(getScreenHeight()*7)/8,(int)(munitionsRatio*((getScreenWidth()*1.0)/4.0)), (getScreenHeight()*1)/8);
+	        GL11.glLoadIdentity();
+	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -80, SCREEN_DEPTH);
+			GL11.glClearColor(0.0F,0.5F,0.0F,1.0F);
+			GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+//			GL11.glPopMatrix();
+
+			
+			double maisonsRatio = (double)level.getMaisonsRestantes()/(double)level.getMaxMaisons();
+//			GL11.glPushMatrix();
+			// en haut ÔøΩ gauche, droite
+	        GL11.glScissor((getScreenWidth()*3)/4,(getScreenHeight()*6)/8,(int)(maisonsRatio*((getScreenWidth()*1.0)/4.0)), (getScreenHeight()*1)/8);
+	        GL11.glViewport((getScreenWidth()*3)/4,(getScreenHeight()*6)/8,(int)(maisonsRatio*((getScreenWidth()*1.0)/4.0)),(getScreenHeight()*1)/8);
+	        GL11.glLoadIdentity();
+	        GL11.glOrtho(-SCREEN_WIDTH/2, SCREEN_WIDTH/2, -SCREEN_HEIGHT/2, SCREEN_HEIGHT/2, -80, SCREEN_DEPTH);
+			GL11.glClearColor(0.0F,0.5F,0.5F,1.0F);
+			GL11.glClear (GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_STENCIL_BUFFER_BIT);
+//			GL11.glPopMatrix();
+
+		}
+		int score = level.getScore();
+		if (score>-1) {
+			String theScore = "Score : "+score+"   ";
+			GL11.glLoadIdentity();
+			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			GL11.glScissor((getScreenWidth()*3)/4,(getScreenHeight()*5)/8,((getScreenWidth()*1)/4), (getScreenHeight()*1)/8);
+			GL11.glViewport((getScreenWidth()*3)/4,(getScreenHeight()*5)/8,((getScreenWidth()*1)/4),(getScreenHeight()*1)/8);
+			if (font==null) {
+				// rare / flassssh
+				theScore = "";
+				GL11.glOrtho(0,((getScreenWidth()*1)/4)-1, (getScreenHeight()*1)/8-1,0,  -1, 1);
+			} else {
+				GL11.glOrtho(0,fontWidth, fontHeight,0,  -1, 1);
+			}
+	        GL11.glDisable(GL11.GL_LIGHTING);
+	        GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			GL11.glEnable(GL11.GL_BLEND);
+			if (font==null) {
+				font = FontLoader.getInstance().loadFont2();
+				fontWidth = font.getWidth("Score : XXXXXXXXXXX");
+				fontHeight = font.getHeight("Score : XXXXXXXXXXX");
+			} else if (level instanceof ScoreLevel) {
+				// bug au score level :/
+				font = FontLoader.getInstance().loadFont1();
+				font.drawString(fontWidth-font.getWidth(theScore),0, theScore, Color.green);
+			} else {
+				font.drawString(fontWidth-font.getWidth(theScore),0, theScore, Color.green);
+			}
+			GL11.glDisable(GL11.GL_BLEND);
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+	}
+	
+
+	
+	private void pollInputs() {
+		// TEST anti poll mouse (sinon CalibrateLevel anglePlateau X2 speed)
+//		while (Keyboard.next()) {
+//			int key = Keyboard.getEventKey();
+//			boolean keyState = Keyboard.getEventKeyState();
+//			level.key(key,keyState);
+//		}
+//		
+//		while (Mouse.next()) {
+//			int button = Mouse.getEventButton();
+//			boolean buttonState = Mouse.getEventButtonState();
+//			int x = Mouse.getEventX();
+//			int y = Mouse.getEventY();
+//			
+//			// c'est au level de g√©rer la projection des controles aussi 
+//			level.mouse(button,buttonState,new Point2D.Double(x,y));
+//		}
+		
+		PrimitiveMouseManager.getInstance().step();
+		
+
+	}
+
+	public static void main(String[] argv) {
+		TempestMain displayExample = new TempestMain();
+		displayExample.start();
+	}
+
+	@Override
+	public int getScreenWidth() {
+		return SCREEN_WIDTH;
+	}
+
+	@Override
+	public int getScreenHeight() {
+		return SCREEN_HEIGHT;
+	}
+	
+}

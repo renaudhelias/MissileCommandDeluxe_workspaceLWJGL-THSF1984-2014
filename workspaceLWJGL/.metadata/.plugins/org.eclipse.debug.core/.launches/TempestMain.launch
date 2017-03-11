@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/Arc2D/src/net/stinfoservices/helias/renaud/tempest/TempestMain.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="net.stinfoservices.helias.renaud.tempest.TempestMain"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="Arc2D"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Djava.library.path=${workspace_loc:Arc2D}"/>
+</launchConfiguration>

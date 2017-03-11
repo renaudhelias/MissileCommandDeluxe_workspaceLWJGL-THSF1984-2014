@@ -1,0 +1,140 @@
+package net.stinfoservices.helias.renaud.tempest.level.properties;
+
+import java.io.IOException;
+import java.util.Properties;
+
+import net.stinfoservices.helias.renaud.tempest.TempestMain;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+
+public class CalibrageProps extends Properties {
+
+	/**
+	 * UID
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final String LARGEUR_PORTE_KEY="LARGEUR_PORTE";
+	private static final String LARGEUR_VP_KEY="LARGEUR_VP";
+	private static final String HAUTEUR_PORTE_KEY="HAUTEUR_PORTE";
+	private static final String DISTANCE_PORTE_KEY="DISTANCE_PORTE";
+	private static final String FORCE_MISSILE_SATELLITE_KEY="FORCE_MISSILE_SATELLITE";
+	private static final String FORCE_MISSILE_TIR_KEY="FORCE_MISSILE_TIR";
+	private static final String RATIO_MISSILE_KEY="RATIO_MISSILE";
+	private static final String RATIO_EXPLOSION_KEY="RATIO_EXPLOSION";
+	private static final String RATIO_EXPLOSION_RED_KEY="RATIO_EXPLOSION_RED";
+	private static final String RATIO_TIREUR_KEY="RATIO_TIREUR";
+	private static final String TAILLE_GRILLE_X_KEY="TAILLE_GRILLE_X";
+	private static final String TAILLE_GRILLE_Y_KEY="TAILLE_GRILLE_Y";
+	private static final String TAILLE_GRILLE_Z_KEY="TAILLE_GRILLE_Z";
+	private static final String ZONE_HEIGHT_KEY="ZONE_HEIGHT";
+	private static final String AUTOCOMPUTE_MISSILE_DISTANCE_KEY="AUTOCOMPUTE_MISSILE_DISTANCE";
+	private CalibrageProps() {
+		try {
+			load(TempestMain.class.getResourceAsStream("calibrage.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static CalibrageProps instance=null;
+	
+	public static CalibrageProps getInstance() {
+		if (instance==null) {
+			instance=new CalibrageProps();
+		}
+		return instance;
+	}
+
+	public double getLargeurPorte() {
+		if (this.containsKey(LARGEUR_PORTE_KEY)) {
+			return Double.valueOf((String)this.get(LARGEUR_PORTE_KEY));
+		}
+		throw new Error("Largeur porte");
+	}
+
+	public double getLargeurVP() {
+		if (this.containsKey(LARGEUR_VP_KEY)) {
+			return Double.valueOf((String)this.get(LARGEUR_VP_KEY));
+		}
+		throw new Error("Largeur video projecteur");
+	}
+
+	public double getHauteurPorte() {
+		if (this.containsKey(HAUTEUR_PORTE_KEY)) {
+			return Double.valueOf((String)this.get(HAUTEUR_PORTE_KEY));
+		}
+		throw new Error("Hauteur porte");
+	}
+
+	public double getDistancePorte() {
+		if (this.containsKey(DISTANCE_PORTE_KEY)) {
+			return Double.valueOf((String)this.get(DISTANCE_PORTE_KEY));
+		}
+		throw new Error("Distance porte");
+	}
+
+	public double getForceMissileSatellite() {
+		if (this.containsKey(FORCE_MISSILE_SATELLITE_KEY)) {
+			return Double.valueOf((String)this.get(FORCE_MISSILE_SATELLITE_KEY));
+		}
+		throw new Error("Force missile satellite");
+	}
+
+	public double getForceMissileTir() {
+		if (this.containsKey(FORCE_MISSILE_TIR_KEY)) {
+			return Double.valueOf((String)this.get(FORCE_MISSILE_TIR_KEY));
+		}
+		throw new Error("Force missile tir");
+	}
+
+	public double getRatioMissile() {
+		if (this.containsKey(RATIO_MISSILE_KEY)) {
+			return Double.valueOf((String)this.get(RATIO_MISSILE_KEY));
+		}
+		throw new Error("Ratio taille missile");
+	}
+	public double getRatioExplosion() {
+		if (this.containsKey(RATIO_EXPLOSION_KEY)) {
+			return Double.valueOf((String)this.get(RATIO_EXPLOSION_KEY));
+		}
+		throw new Error("Ratio taille explosion");
+	}
+
+	public double getRatioExplosionRed() {
+		if (this.containsKey(RATIO_EXPLOSION_RED_KEY)) {
+			return Double.valueOf((String)this.get(RATIO_EXPLOSION_RED_KEY));
+		}
+		throw new Error("Ratio taille explosion red");
+	}
+
+
+	public double getRatioTireur() {
+		if (this.containsKey(RATIO_TIREUR_KEY)) {
+			return Double.valueOf((String)this.get(RATIO_TIREUR_KEY));
+		}
+		throw new Error("Ratio taille tireur");
+	}
+
+	public Point3D.Integer getTailleGrille() {
+		if (this.containsKey(TAILLE_GRILLE_X_KEY) && this.containsKey(TAILLE_GRILLE_Y_KEY) && this.containsKey(TAILLE_GRILLE_Z_KEY)) {
+			int x = Integer.valueOf((String)this.get(TAILLE_GRILLE_X_KEY));
+			int y = Integer.valueOf((String)this.get(TAILLE_GRILLE_Y_KEY));
+			int z = Integer.valueOf((String)this.get(TAILLE_GRILLE_Z_KEY));
+			return new Point3D.Integer(x,y,z);
+		}
+		throw new Error("Taille grille");
+	}
+
+	public double getAutoComputeMissileDistance() {
+		if (this.containsKey(AUTOCOMPUTE_MISSILE_DISTANCE_KEY)) {
+			return Double.valueOf((String)this.get(AUTOCOMPUTE_MISSILE_DISTANCE_KEY));
+		}
+		throw new Error("auto compute missile distance");
+	}
+
+	public int getZoneHeight() {
+		if (this.containsKey(ZONE_HEIGHT_KEY)) {
+			return Integer.valueOf((String)this.get(ZONE_HEIGHT_KEY));
+		}
+		throw new Error("Zone height");
+	}
+}

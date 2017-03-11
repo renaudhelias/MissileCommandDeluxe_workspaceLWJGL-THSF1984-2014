@@ -1,0 +1,69 @@
+package net.stinfoservices.helias.renaud.tempest.agent.projectile.factory;
+
+import java.awt.geom.Point2D;
+
+import net.stinfoservices.helias.renaud.tempest.IPosition;
+import net.stinfoservices.helias.renaud.tempest.IPosition2D;
+import net.stinfoservices.helias.renaud.tempest.IPosition3D;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.IMissile;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.Missile3D;
+import net.stinfoservices.helias.renaud.tempest.agent.projectile.special.Marqueur3D;
+import net.stinfoservices.helias.renaud.tempest.level.ILevel3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+
+public class MissileFactory3D implements IMissileFactory {
+	private ILevel3D level;
+	
+
+	public MissileFactory3D(ILevel3D level) {
+		this.level = level;
+	}
+	
+	@Override
+	public void prepareMissile(int idTexMarqueur, int widthMarqueur, int heightMarqueur, int idTexMissile, int widthMissile, int heightMissile, int idTexExplode, int widthExplode, int heightExplode) {
+	}
+
+	public IMissile launcheMissile(IPosition source, IPosition destination, boolean satellite) {
+		
+		Point3D.Double derriere = adapt(source);
+		//FIXME projection d'un monde � l'autre � faire ici
+		Point3D.Double devant = adapt(destination);
+		double taille = Math.sqrt(Math.pow(devant.x-derriere.x,2)+Math.pow(devant.y-derriere.y,2)+Math.pow(devant.z-derriere.z,2));
+		devant.x = devant.x - derriere.x;
+		devant.y = devant.y - derriere.y;
+		devant.z = devant.z - derriere.z;
+		devant.x =devant.x*50.0/taille;
+		devant.y =devant.y*50.0/taille;
+		devant.z =devant.z*50.0/taille;
+		devant.x = devant.x + derriere.x;
+		devant.y = devant.y + derriere.y;
+		devant.z = devant.z + derriere.z;
+
+		Marqueur3D marqueur = null;
+		if (!satellite) {
+			marqueur = new Marqueur3D(adapt(destination).x, adapt(destination).y, adapt(destination).z);
+//			marqueur.prepare(idTexMarqueur, widthMarqueur, heightMarqueur);
+		}
+		Point3D.Double origine = adapt(source);
+		Missile3D missile = new Missile3D(level, origine, devant, derriere, 10, marqueur, "sphere.obj");
+		
+		if (satellite) {
+			level.addMonstre(missile);
+		} else {
+			level.addFriend(missile);
+		}
+		return missile;
+	}
+
+
+	public static Point3D.Double adapt(IPosition move) {
+		if (move instanceof IPosition3D) {
+			return new Point3D.Double(((IPosition3D) move).getPosition());
+		}
+		else {
+			Point2D.Double move2D = ((IPosition2D)move).getPosition();
+			return new Point3D.Double(move2D.x,move2D.y,0);
+		}
+	}
+		
+}

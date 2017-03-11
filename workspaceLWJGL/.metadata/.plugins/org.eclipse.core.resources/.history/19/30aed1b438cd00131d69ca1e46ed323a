@@ -1,0 +1,128 @@
+package net.stinfoservices.helias.renaud.tempest.agent;
+
+import java.awt.Color;
+import java.io.IOException;
+import java.net.URISyntaxException;
+
+import org.lwjgl.opengl.GL11;
+
+import net.stinfoservices.helias.renaud.tempest.IPosition3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Point3D;
+import net.stinfoservices.helias.renaud.tempest.tools.Tools;
+import net.stinfoservices.helias.renaud.tempest.tools.factory.IImage3D;
+import net.stinfoservices.helias.renaud.tempest.tools.factory.Image3DFactory;
+
+/**
+ * C'est un cube avec un rayon.
+ * @author freemac
+ *
+ */
+public abstract class Circle3DRenderer implements ICircle3D, IPosition3D, IMove, IRenderer3D {
+
+	private IImage3D missile;
+	private Color c;
+	private boolean mauditAxeY;
+
+	public Circle3DRenderer(boolean mauditAxeY) {
+		this.mauditAxeY = mauditAxeY;
+	}
+	
+	@Override
+	public void prepare(String fileName) {
+		try {
+			missile = Image3DFactory.getInstance().create(fileName);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setColor(Color c) {
+		this.c =c;
+	}
+	
+	@Override
+	public boolean render(int calque) {
+		
+		
+		
+GL11.glPushMatrix();
+		if (c!=null) {
+			GL11.glColor3d(c.getRed()/256.0, c.getGreen()/256.0, c.getBlue()/256.0);
+		}
+		double progression = getProgression();
+		if (progression>= 1.0 || progression <0.0) {
+			throw new Error("Mauvaise progression ("+progression+") sur " + this.getClass().getName());
+		}
+		
+
+//		System.out.println("progression :"+progression);
+		Point3D.Double middle = getPosition();
+		
+		GL11.glTranslated(middle.x,middle.y,middle.z);
+
+//		double trusthScale=2.0*getRayon() ; //Math.sqrt(Math.pow(BUG*getRayon(),2)+Math.pow(BUG*getRayon(),2));
+		// zoom est selon le rep�re. donc des deux c�t�s � la fois, donc sqrt.
+//		GL11.glScaled(Math.sqrt(getRayon()),Math.sqrt(getRayon()),Math.sqrt(getRayon()));
+		GL11.glScaled(getRayon(),getRayon(),getRayon());
+		if (isOriented()) {
+			Point3D.Double o = getOrientation();
+			if (o != null) {
+				
+//				Point3D.Double o2 = new Point3D.Double(0,-1,0);
+				
+//				if (o.x==0 && o.z==0) {
+//					// je doit prendre un autre axe, car pas de peau.
+//					mauditAxeY = true;
+//				}
+//				
+				
+				Point3D.Double oy = Tools.nomalize(new Point3D.Double(o.x,0,o.z));
+				Point3D.Double ox = Tools.nomalize(new Point3D.Double(0,o.y,o.z));
+				Point3D.Double o2y = new Point3D.Double(1,0,0);
+				Point3D.Double o2x = new Point3D.Double(0,-1,0);
+				
+				double angleX = Tools.angleVectorVector(ox,o2x);
+				if (!Double.isNaN(angleX)) {
+//					angleX=-angleX;
+					double rX=ox.x*o2x.y-ox.y*o2x.x;
+					double rY=ox.y*o2x.z-ox.z*o2x.y;
+					double rZ=ox.z*o2x.x-ox.x*o2x.z;
+					
+					GL11.glRotated((360.0*angleX)/(Math.PI*2), rY, rZ, rX);
+				} else {
+					System.out.println("NaN B");
+				}
+				// mouais, rotation sur un angle, mais je préferai des X and then Z
+				double angleY = Tools.angleVectorVector(oy,o2y);
+				if (!Double.isNaN(angleY)) {
+//					angleY=-angleY;
+					double rX=oy.x*o2y.y-oy.y*o2y.x;
+					double rY=oy.y*o2y.z-oy.z*o2y.y;
+					double rZ=oy.z*o2y.x-oy.x*o2y.z;
+					
+					GL11.glRotated((360.0*angleY)/(Math.PI*2), rY, rZ, rX);
+				} else {
+					System.out.println("NaN A");
+				}
+				
+			}
+		}
+		missile.render(calque);
+
+
+		GL11.glPopMatrix();
+
+		return true;
+	}
+
+	/**
+	 * Par défaut on est fixe.
+	 */
+	@Override
+	public double getProgression() {
+		return 0;
+	}
+
+}

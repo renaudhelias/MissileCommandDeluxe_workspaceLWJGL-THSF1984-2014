@@ -1,0 +1,28 @@
+1397560425867	Copy compilation unit
+1397560658761	Rename type 'IMove'
+1397560812627	Copy compilation unit
+1397561296733	Delete element
+1397561958193	Delete element
+1397647803284	Copy compilation unit
+1397647812697	Copy compilation unit
+1397647914473	Copy compilation unit
+1397647921580	Copy compilation unit
+1397648060883	Rename method 'getCenter'
+1397648520715	Rename type 'MoveAdapter'
+1397648616365	Copy compilation unit
+1397732540550	Rename type 'Case'
+1397733342945	Copy compilation unit
+1397733353221	Copy compilation unit
+1397819682880	Rename type 'Image3DLoader'
+1397903529045	Rename local variable 'vertexArray'
+1397905747803	Rename type 'IProjectile'
+1397916361756	Rename method 'getRightOrientation'
+1397986723547	Rename type 'ICircle'
+1397987183098	Delete element
+1397987412173	Copy compilation unit
+1397987446500	Copy compilation unit
+1397988493953	Rename method 'getPosition'
+1397988514434	Rename method 'getPosition'
+1397989525460	Rename type 'Move2DAdapter'
+1397989556527	Rename type 'Move3DAdapter'
+1397996714040	Rename type 'Projectile2DAdapter'

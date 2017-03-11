@@ -1,0 +1,72 @@
+package net.stinfoservices.helias.renaud.tempest.tools.factory;
+
+import static org.junit.Assert.assertNotNull;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import net.stinfoservices.helias.renaud.tempest.TempestMain;
+
+public class Image3DFactory {
+
+	private static Image3DFactory image3DFactory = null;
+	
+	private Map<String,IImage3D> bibliotheque = new HashMap<String,IImage3D>();
+	
+	public static Image3DFactory getInstance() {
+		if (image3DFactory==null) {
+			image3DFactory = new Image3DFactory();
+		}
+		return image3DFactory;
+	}
+	
+	public IImage3D create(String fileName) throws URISyntaxException, IOException {
+		if (bibliotheque.containsKey(fileName)) {
+			return bibliotheque.get(fileName);
+		}
+		Image3D img = new Image3D();
+		URL ressource = TempestMain.class.getResource(fileName);
+		assertNotNull(ressource);
+		File f = new File(ressource.toURI());
+		FileReader fr = new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line=null;
+		String o="^o (.*)$";
+		String p="^([vf]) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?) (-?[0-9]+(?:\\.[0-9]+)?)$";
+		Pattern patternP = Pattern.compile(p);
+		Pattern patternO = Pattern.compile(o);
+		while ((line=br.readLine())!=null) {
+			Matcher matcherP = patternP.matcher(line);
+			if (matcherP.matches()) {
+				if (matcherP.group(1).equals("v")) {
+					//System.out.println("Vertex("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+					img.addVertex(Double.valueOf(matcherP.group(2)),Double.valueOf(matcherP.group(3)),Double.valueOf(matcherP.group(4)));
+				} else {
+					//System.out.println("triangle("+matcherP.group(2)+","+matcherP.group(3)+","+matcherP.group(4)+")");
+					img.addTriangle(Integer.valueOf(matcherP.group(2)),Integer.valueOf(matcherP.group(3)),Integer.valueOf(matcherP.group(4)));
+				}
+			}
+			Matcher matcherO = patternO.matcher(line);
+			if (matcherO.matches()) {
+				System.out.println("========Objet "+matcherO.group(1)+"==");
+				img.welcomeObjet(matcherO.group(1));
+			}
+		}
+		img.normalize();
+		br.close();
+		fr.close();
+		bibliotheque.put(fileName,img);
+		return img;
+	}
+	
+
+
+}

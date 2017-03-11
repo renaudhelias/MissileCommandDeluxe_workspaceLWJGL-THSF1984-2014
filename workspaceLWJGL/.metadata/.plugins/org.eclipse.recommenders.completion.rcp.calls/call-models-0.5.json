@@ -1,0 +1,48 @@
+{
+  "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl-debug.jar": {
+    "location": "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl-debug.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl-debug.jar\u0027. Neither fingerprint \u00277013dd9eb0275466902e7f78efe77f56156ba45a\u0027 nor symbolic name \u0027lwjgl-debug\u0027 are known."
+  },
+  "C:\\Program Files\\Java\\jdk1.7\\lib\\rt.jar": {
+    "coordinate": "jre:jre:zip:call:1.0.0",
+    "location": "C:\\Program Files\\Java\\jdk1.7\\lib\\rt.jar",
+    "status": "RESOLVED"
+  },
+  "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl_util.jar": {
+    "location": "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl_util.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\lib\\lwjgl_util.jar\u0027. Neither fingerprint \u0027a778846b64008fc7f48ead2377f034e547991699\u0027 nor symbolic name \u0027lwjgl_util\u0027 are known."
+  },
+  "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\src": {
+    "location": "C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\src",
+    "status": "UNRESOLVED",
+    "error": "No class path info available for \u0027C:\\Users\\STI\\Renaud\\workspaceLWJGL\\Arc2D\\src\u0027. Skipped."
+  },
+  "/usr/java/jdk1.7.0_51/jre/lib/rt.jar": {
+    "coordinate": "jre:jre:zip:call:1.0.0",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/rt.jar",
+    "status": "RESOLVED",
+    "error": "No class path info available for \u0027/usr/java/jdk1.7.0_51/jre/lib/rt.jar\u0027. Skipped."
+  },
+  "/home/freemac/workspaceLWJGL/Arc2D/src": {
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/src",
+    "status": "UNRESOLVED",
+    "error": "No class path info available for \u0027/home/freemac/workspaceLWJGL/Arc2D/src\u0027. Skipped."
+  },
+  "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl-debug.jar": {
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl-debug.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl-debug.jar\u0027. Neither fingerprint \u00277013dd9eb0275466902e7f78efe77f56156ba45a\u0027 nor symbolic name \u0027lwjgl-debug\u0027 are known."
+  },
+  "/home/freemac/workspaceLWJGL/Arc2D/lib/jinput.jar": {
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/jinput.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027/home/freemac/workspaceLWJGL/Arc2D/lib/jinput.jar\u0027. Neither fingerprint \u00272d5a40f2a25f8b4ec1ea35f3e5ca79119ed5d027\u0027 nor symbolic name \u0027jinput\u0027 are known."
+  },
+  "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/rt.jar": {
+    "coordinate": "jre:jre:zip:call:1.0.0",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/rt.jar",
+    "status": "RESOLVED"
+  }
+}

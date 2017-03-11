@@ -1,0 +1,34 @@
+1398072915234	Rename type 'Level3D'
+1398072923942	Copy compilation unit
+1398073670381	Rename type 'ITerrain'
+1398074500720	Rename type 'IZone'
+1398075898099	Rename method 'getTerrain'
+1398075907897	Rename method 'setTerrain'
+1398075949876	Copy compilation unit
+1398077456442	Copy compilation unit
+1398087808914	Copy compilation unit
+1398090588123	Copy compilation unit
+1398091870162	Rename field 'angle'
+1398502657255	Move compilation unit
+1398502663289	Move compilation unit
+1398502668939	Delete element
+1398502732168	Rename package 'net.stinfoservices.helias.renaud.tempest.tools.factory'
+1398502757685	Rename package 'net.stinfoservices.helias.renaud.tempest.tools.interfaces'
+1398502765312	Move compilation units
+1398502797556	Move compilation units
+1398502820434	Rename package 'net.stinfoservices.helias.renaud.tempest.tools.factories'
+1398502835652	Rename package 'net.stinfoservices.helias.renaud.tempest.tools.adapts'
+1398502898420	Move compilation unit
+1398502929683	Move compilation unit
+1398502944856	Move compilation unit
+1398503017546	Move compilation units
+1398503021679	Move compilation unit
+1398503032565	Move compilation unit
+1398503075515	Delete element
+1398503895519	Move file
+1398508523360	Delete element
+1398510002209	Rename field 'mauditCentre'
+1398622127347	Delete element
+1398629388082	Rename local variable 'minScale'
+1398629750879	Rename type 'PressStartImage'
+1398629912963	Delete elements

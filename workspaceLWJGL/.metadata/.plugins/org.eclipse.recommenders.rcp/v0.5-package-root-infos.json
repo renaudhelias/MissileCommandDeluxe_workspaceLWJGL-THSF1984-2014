@@ -1,0 +1,587 @@
+[
+  {
+    "symbolicName": "natives-windows",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "8336b5bc3a896136dad07c379b38032461810898",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/natives-windows.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "slick-examples",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "37884a2ae1f9d9de70cdf5871da0cbc1012e0cb5",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/slick-examples.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "9fd6ccb7503ad309ad15bf63cdce12faa7977227",
+    "jarFileModificationDate": "2014-04-23T15:01:30+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/jsse.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "natives-linux",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "0a32f1235a69f75d0127746678b3b136e84c6217",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/natives-linux.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "natives-mac",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "b05f4defd3a1ccdf4c6684128bcd3b2cbd02e227",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/natives-mac.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "ibxm",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "21034b6aae8abb63fd2e689e9f979920630e500f",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/ibxm.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f4ae89daf7677cfa2755738e0b682b0973762508",
+    "jarFileModificationDate": "2014-04-23T15:01:30+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/rhino.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "be4124ecceb37230419f0f31ea6e7d50babb4973",
+    "jarFileModificationDate": "2013-12-19T03:50:04+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/jce.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "lwjgl_util_applet",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "e585bf3914886cb52e31577603e53f3c9282f3bc",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl_util_applet.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "tinylinepp",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "2ac720440285d1931b067eae87cc94d42de098c5",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/tinylinepp.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f6e25901fa07208ea4deac73bee7281e41805ed7",
+    "jarFileModificationDate": "2013-04-16T01:12:08+02:00",
+    "location": "/usr/share/java/java-atk-wrapper.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "fe38edb31145fe0dcd95b278c6069efac07cf2d6",
+    "jarFileModificationDate": "2013-12-19T04:12:38+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/jfr.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "c7845f85a7881c6c8166dd02bbe37d245661b562",
+    "jarFileModificationDate": "2014-04-23T15:01:30+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/resources.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f81f562159d3725e9f015a5ea538bd6fc5a78f7e",
+    "jarFileModificationDate": "2014-04-23T14:48:43+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/localedata.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "2144962ca83d628a1c16179404d425e25d4c11ca",
+    "jarFileModificationDate": "2014-04-24T14:07:25+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/rt.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "AppleJavaExtensions",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "7f384023880a280b547347e643d2ceb041b6d57e",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/AppleJavaExtensions.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "lwjgl",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "5654d06e61a1bba7ae1e7f5233e1106be64c91cd",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "lzma",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "521616dc7487b42bef0e803bd2fa3faf668101d7",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lzma.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "5e51ce82a095b4a23291b1cd35e6f1488efc5776",
+    "jarFileModificationDate": "2013-12-19T03:54:58+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/sunpkcs11.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "e5f676ac3f301adf72fe2c99f20be3e3ec2aefca",
+    "jarFileModificationDate": "2013-12-19T04:24:17+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/localedata.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "lwjgl_test",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "e91d4740a2dbb3b43d27145cd66dce989b48012d",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl_test.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "8ef275643beeef867d8799caf702441be2697857",
+    "jarFileModificationDate": "2013-12-19T04:12:38+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/resources.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "junit",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "4e031bb61df09069aeb2bffb4019e7a5034a4ee0",
+    "jarFileModificationDate": "2013-05-17T18:05:12+02:00",
+    "location": "/home/freemac/eclipse/plugins/org.junit_4.11.0.v201303080030/junit.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f90ebbb8198a741f1d0dd567c075195fd5af90f8",
+    "jarFileModificationDate": "2013-12-19T04:24:04+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/charsets.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "asm-debug-all",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "ecc007933214f34c0833848cb396b19094b4bb34",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/asm-debug-all.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jogg-0.0.7",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "08d79e2bf312278ed077054d620631755851b8a8",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/jogg-0.0.7.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f8166655d74cfbc622390ca32f2b8966e2761b78",
+    "jarFileModificationDate": "2013-12-19T03:55:14+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/dnsns.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jinput",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "2d5a40f2a25f8b4ec1ea35f3e5ca79119ed5d027",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/jinput.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "5e1750ab236a90fcdd48157472f3fa21f74ecec6",
+    "jarFileModificationDate": "2013-12-19T04:23:58+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/rt.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "2f533223476af966889b742218a65d354991d870",
+    "jarFileModificationDate": "2014-04-23T14:45:50+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/dnsns.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jnlp",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "456a222ba1345d564caf7cd3699d8fa98eefe219",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/jnlp.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "33dc1b22cd61821bd09e07bbf1b30354373328cf",
+    "jarFileModificationDate": "2014-04-23T14:45:19+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/jce.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "8fc3af3d0e2d85398fa6af245a08a26848734731",
+    "jarFileModificationDate": "2013-12-19T04:24:00+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/jsse.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "org.hamcrest.core",
+    "version": {
+      "major": 1,
+      "minor": 3,
+      "micro": 0,
+      "qualifier": "v201303031735"
+    },
+    "jarFileFingerprint": "5ed9fe32ab1d2b18bec7cac0a044090100f327ba",
+    "jarFileModificationDate": "2014-02-24T11:41:34+01:00",
+    "location": "/home/freemac/eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "slick",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "d59834341d858e866ba52e11ac1d18db5be940d0",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/slick.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "34f3c7586927ab836b7b8b1fed48259adab3f567",
+    "jarFileModificationDate": "2014-04-23T14:49:07+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/sunjce_provider.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "eae6509ff38713d28efcca1625773327326ca62e",
+    "jarFileModificationDate": "2014-04-23T14:07:43+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/pulse-java.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jorbis-0.0.15",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "8010acdcf550f7c5d5ac64833fffa008e22c18f7",
+    "jarFileModificationDate": "2013-12-14T13:33:52+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/jorbis-0.0.15.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "lwjgl-debug",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "7013dd9eb0275466902e7f78efe77f56156ba45a",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl-debug.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "lwjgl_util",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "a778846b64008fc7f48ead2377f034e547991699",
+    "jarFileModificationDate": "2013-11-13T10:01:20+01:00",
+    "location": "/home/freemac/workspaceLWJGL/Arc2D/lib/lwjgl_util.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "b8601837ca8d95a0569dfa90346800a2e1b2726f",
+    "jarFileModificationDate": "2014-04-23T14:48:48+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-amd64/jre/lib/charsets.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "95dc9053062d68cde4e8c38494cc63aefd7b0a42",
+    "jarFileModificationDate": "2013-12-19T03:54:35+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/sunec.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "633896197598779b284fc87bab9da74b6083dc35",
+    "jarFileModificationDate": "2014-04-23T14:45:43+02:00",
+    "location": "/usr/lib/jvm/java-6-openjdk-common/jre/lib/ext/sunpkcs11.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "c186ae37c41aa1f3dfa11d86bbd673c79a5c20ef",
+    "jarFileModificationDate": "2013-12-19T04:00:53+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/zipfs.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "1826204b0e05aef412b595321866f7d190e0498d",
+    "jarFileModificationDate": "2013-12-19T03:59:37+01:00",
+    "location": "/usr/java/jdk1.7.0_51/jre/lib/ext/sunjce_provider.jar",
+    "javaRuntime": true
+  }
+]
