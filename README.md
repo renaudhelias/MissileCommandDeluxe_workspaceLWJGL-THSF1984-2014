@@ -1,6 +1,6 @@
 # MissileCommandDeluxe THSF 1984-2014
 
-Presentation OpenGL full.pdf : Formation de deux jours à OpenGL, divisé en 4 demi-journées (4 fondamentaux) :
+Presentation OpenGL full.pdf : Diapo d'une formation de deux jours à OpenGL, divisé en 4 demi-journées (4 fondamentaux) :
 - Vertex
 - Matrix
 - Push/Pop
