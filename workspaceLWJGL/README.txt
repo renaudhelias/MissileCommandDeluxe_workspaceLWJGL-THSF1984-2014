@@ -10,6 +10,7 @@ chmod +x hackMices.sh
 ./launch.sh
 
 sous Windows :
+cd Arc2D
 launch.bat
 
 # Calibrage
