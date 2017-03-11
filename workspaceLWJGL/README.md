@@ -2,12 +2,14 @@
 Java 7 SDK
 
 # Lancement du programme
-sous Linux :
+
+Sous Linux :
 - cd Arc2D
 - chmod +x hackMices.sh
 - ./hackMices.sh
 - ./launch.sh
-sous Windows :
+
+Sous Windows :
 - cd Arc2D
 - launch.bat
 
