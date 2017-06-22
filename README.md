@@ -8,7 +8,7 @@ Presentation OpenGL full.pdf : Diapo d'une formation de deux jours à OpenGL, di
 
 [![rubans & cerfVolant - opengl](http://img.youtube.com/vi/t2-0ncnkLbU/0.jpg)](http://www.youtube.com/watch?v=t2-0ncnkLbU)
 
-[Sphere - algorithme type "diviser pour reigner"](http://www.youtube.com/watch?v=I0bnUqPJ3x0)]
+[![Sphere - algorithme type "diviser pour reigner"](http://img.youtube.com/vi/I0bnUqPJ3x0/0.jpg)](http://www.youtube.com/watch?v=I0bnUqPJ3x0)
 
 workspaceLWJGL : MissileCommandDeluxe source code
 
